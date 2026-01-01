@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        /* --- STEP 1: SET YOUR COLOR THEME HERE --- */
+        :root {
+            /* Replace these hex codes with the colors from the image you liked! */
+            --bg-color-main: #1a1a2e; /* Dark background color */
+            --text-color-main: #e0e0e0; /* Light text color */
+            --accent-color: #4ecca3;    /* Color for links and bold names */
+            --container-bg: #16213e;    /* Slightly different color for the main box area */
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            /* Using the variables defined above */
+            background-color: var(--bg-color-main);
+            color: var(--text-color-main);
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 800px; /* Increased width slightly to fit slideshow side-by-side */
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        /* --- Intro Section (The Split Layout) --- */
+        .intro-section {
+            display: flex;
+            align-items: center;
+            gap: 30px; /* Space between blurb and slideshow */
+            margin-bottom: 40px;
+        }
+
+        .about-blurb {
+            flex: 1; /* Takes up available space */
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .bio-text {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* --- The Slideshow container --- */
+        .slideshow-container {
+            flex: 1;
+            max-width: 350px; /* Controls max width of slideshow area */
+            height: 250px;    /* Fixed height so page doesn't jump around */
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 3px solid var(--accent-color);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 1s ease-in-out;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures images cover the box without stretching weirdly */
+        }
+
+        /* Class added by Javascript to show the active image */
+        .slide.active {
+            opacity: 1;
+        }
+
+
+        /* --- Projects Section --- */
+        .section-header {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .project-list {
+            list-style: none;
+            padding: 0;
+            text-align: left; /* Aligning projects left looks cleaner now */
+        }
+
+        .project-list li {
+            margin-bottom: 15px;
+            background-color: rgba(255,255,255,0.05); /* Slight background for pop */
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .project-list a {
+            color: var(--text-color-main);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #aaa; /* Slightly dimmer text for description */
+        }
+
+        .project-list a:hover {
+            color: var(--accent-color);
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Responsive design for phones so items stack */
+        @media (max-width: 650px) {
+            .intro-section {
+                flex-direction: column-reverse; /* Puts slideshow on top on mobile */
+                text-align: center;
+            }
+            .slideshow-container {
+                max-width: 100%;
+                height: 200px;
+            }
+            .project-list {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <section class="intro-section">
+            <div class="about-blurb">
+                <div class="name">Your Name Here</div>
+                <div class="bio-text">
+                    This is where your small blurb goes. Mention you are a Mechanical & Mechatronics Engineering student interested in robotics, CAD design, and hands-on prototyping. Keep it punchy!
+                </div>
+            </div>
+
+            <div class="slideshow-container">
+                <div class="slide active">
+                    <img src="https://placehold.co/400x300/png?text=Project+Photo+1" alt="Project 1">
+                </div>
+                <div class="slide">
+                    <img src="https://placehold.co/400x300/png?text=CAD+Screenshot+2" alt="CAD Screenshot">
+                </div>
+                <div class="slide">
+                    <img src="https://placehold.co/400x300/png?text=Robot+Prototype+3" alt="Prototype">
+                </div>
+            </div>
+        </section>
+
+
+        <section>
+            <h2 class="section-header">Projects</h2>
+            <ul class="project-list">
+                <li>
+                    <a href="https://github.com/yourusername/project1">CoreXY 3D Printer Build</a>
+                    <div class="project-description">A custom-built 3D printer using aluminum extrusions and Klipper firmware.</div>
+                </li>
+                <li>
+                    <a href="https://github.com/yourusername/project2">Arduino Study Timer</a>
+                    <div class="project-description">A physical hardware timer integrated with a Python desktop app.</div>
+                </li>
+                </ul>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Your Name. Hosted on GitHub Pages.</p>
+        </footer>
+    </div>
+
+    <script>
+        let slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            // Remove 'active' class from current slide
+            slides[currentSlide].classList.remove('active');
+            // Calculate slide index
+            currentSlide = (currentSlide + 1) % slides.length;
+            // Add 'active' class to new slide
+            slides[currentSlide].classList.add('active');
+        }
+
+        // Change image every 3000 milliseconds (3 seconds)
+        setInterval(nextSlide, 3000);
+    </script>
+</body>
+</html>
