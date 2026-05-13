@@ -1,0 +1,268 @@
+/* =============================================
+   ONKAAR GREWAL — shared stylesheet
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+
+/* ===== VARIABLES ===== */
+:root {
+  --bg:       #0d0d0d;
+  --bg2:      #111111;
+  --bg3:      #181818;
+  --border:   #252525;
+  --border2:  #333;
+  --maroon:   #7A003C;
+  --maroon-l: #a5004f;
+  --maroon-d: #520029;
+  --gold:     #FDBF57;
+  --gold-d:   #c99230;
+  --text:     #e8e6e0;
+  --muted:    #888880;
+  --mono:     'Space Mono', monospace;
+  --serif:    'Playfair Display', Georgia, serif;
+  --sans:     'Lato', sans-serif;
+  --nav-h:    96px; /* approximate nav height for scroll-margin */
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+a { color: var(--gold); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #fff; }
+img { max-width: 100%; display: block; }
+
+/* ===== GRID BACKGROUND ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== NAV — two rows ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 2.5rem;
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.nav-pages {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  align-items: center;
+}
+.nav-pages a {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.nav-pages a:hover { color: var(--gold); }
+.nav-pages a.current { color: var(--gold); }
+.nav-pages .nav-cta {
+  background: var(--maroon);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  font-size: 0.72rem;
+  transition: background 0.2s;
+}
+.nav-pages .nav-cta:hover { background: var(--maroon-l); color: #fff; }
+
+/* Section anchors — only rendered in index.html */
+.nav-sections {
+  border-top: 1px solid var(--border);
+  padding: 0.45rem 2.5rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.nav-sections a {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.nav-sections a:hover { color: var(--gold); }
+
+/* ===== PAGE WRAPPER ===== */
+.page-z { position: relative; z-index: 1; }
+
+/* ===== SECTIONS ===== */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  scroll-margin-top: var(--nav-h);
+}
+section + section { border-top: 1px solid var(--border); }
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--maroon-l);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.section-label::after {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 1px;
+  background: var(--maroon-l);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.btn-primary { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+.btn-primary:hover { background: var(--maroon-l); border-color: var(--maroon-l); color: #fff; }
+.btn-outline { background: transparent; border-color: var(--border2); color: var(--muted); }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ===== TAGS / PILLS ===== */
+.tag {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--maroon);
+  color: var(--maroon-l);
+}
+.pill {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+
+/* ===== INFO ROWS ===== */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+.info-row:first-child { border-top: 1px solid var(--border); }
+.info-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--maroon-l);
+  white-space: nowrap;
+}
+.info-value { font-size: 0.88rem; color: var(--text); text-align: right; }
+
+/* ===== IMAGE PLACEHOLDER BASE ===== */
+.img-placeholder {
+  background: var(--bg3);
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 14px,
+      rgba(122,0,60,0.1) 14px, rgba(122,0,60,0.1) 15px
+    );
+  overflow: hidden;
+  position: relative;
+}
+.img-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--border2);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.7s ease both; }
+.d1 { animation-delay: 0.12s; }
+.d2 { animation-delay: 0.24s; }
+.d3 { animation-delay: 0.38s; }
+.d4 { animation-delay: 0.54s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .nav-top { padding: 0.8rem 1.5rem; }
+  .nav-pages { gap: 1.5rem; }
+  .nav-sections { padding: 0.4rem 1.5rem; gap: 1.25rem; }
+  section { padding: 5rem 1.5rem; }
+}
+@media (max-width: 500px) {
+  .nav-pages { gap: 1rem; }
+  .nav-pages a { font-size: 0.7rem; }
+  .nav-sections { display: none; }
+}
