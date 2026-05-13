@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Résumé — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root { --nav-h: 60px; }
+
+    .resume-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 7rem 2.5rem 4rem;
+    }
+
+    .resume-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .resume-title-block {}
+    .resume-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--maroon-l);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .resume-eyebrow::after {
+      content: '';
+      display: block;
+      width: 36px;
+      height: 1px;
+      background: var(--maroon-l);
+    }
+    .resume-title {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .resume-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .resume-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+
+    /* PDF embed */
+    .resume-viewer {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      position: relative;
+    }
+    .resume-viewer iframe {
+      width: 100%;
+      height: 80vh;
+      min-height: 600px;
+      border: none;
+      display: block;
+    }
+
+    /* Fallback message when PDF not uploaded yet */
+    .resume-fallback {
+      padding: 5rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .fallback-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      color: var(--maroon-l);
+    }
+    .fallback-title {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .fallback-msg {
+      font-size: 0.88rem;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.65;
+    }
+    .fallback-code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border2);
+      color: var(--gold);
+      background: var(--bg3);
+    }
+
+    /* Contact strip */
+    .resume-contact {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .contact-chip {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .chip-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--maroon-l);
+    }
+    .chip-value {
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    @media (max-width: 600px) {
+      .resume-header { flex-direction: column; align-items: flex-start; }
+      .resume-viewer iframe { height: 60vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">// OG</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta current">Résumé</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="resume-wrap">
+
+    <div class="resume-header fade-up">
+      <div class="resume-title-block">
+        <p class="resume-eyebrow">Onkaar Grewal</p>
+        <h1 class="resume-title">Résumé</h1>
+        <p class="resume-sub">Engineering Physics · McMaster University · Class of 2028</p>
+      </div>
+      <div class="resume-actions">
+        <a href="resume.pdf" download class="btn btn-primary">Download PDF ↓</a>
+        <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open full screen ↗</a>
+      </div>
+    </div>
+
+    <!--
+      SETUP:
+      Upload your résumé as "resume.pdf" to the root of your repo (same folder as index.html).
+      It will appear embedded below. Until then, the fallback message shows.
+    -->
+    <div class="resume-viewer fade-up">
+      <iframe
+        src="resume.pdf"
+        title="Onkaar Grewal — Résumé"
+        aria-label="Résumé PDF viewer"
+        onerror="this.style.display='none'"
+      ></iframe>
+
+      <!-- This shows if the iframe fails to load the PDF -->
+      <noscript>
+        <div class="resume-fallback">
+          <div class="fallback-icon">PDF</div>
+          <h2 class="fallback-title">Résumé not yet uploaded</h2>
+          <p class="fallback-msg">
+            Add your résumé to the repo root to display it here. It should be named exactly:
+          </p>
+          <span class="fallback-code">resume.pdf</span>
+          <a href="mailto:grewalo@mcmaster.ca" class="btn btn-outline" style="margin-top:0.5rem;">
+            Request résumé by email ↗
+          </a>
+        </div>
+      </noscript>
+    </div>
+
+    <!--
+      FALLBACK for when PDF doesn't load (common on some browsers):
+      The iframe will show a blank grey box if resume.pdf doesn't exist.
+      Once you upload resume.pdf to your repo, this works perfectly.
+    -->
+
+    <!-- Contact strip under résumé -->
+    <div class="resume-contact fade-up">
+      <div class="contact-chip">
+        <span class="chip-label">Email</span>
+        <a href="mailto:grewalo@mcmaster.ca" class="chip-value">grewalo@mcmaster.ca</a>  <!-- EDIT -->
+      </div>
+      <div class="contact-chip">
+        <span class="chip-label">LinkedIn</span>
+        <a href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener" class="chip-value">onkaar-grewal</a>
+      </div>
+      <div class="contact-chip">
+        <span class="chip-label">GitHub</span>
+        <a href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener" class="chip-value">OnkaarGrewal</a>
+      </div>
+      <div style="margin-left:auto;">
+        <a href="index.html#contact" class="btn btn-outline" style="font-size:0.65rem;">Get in touch ↗</a>
+      </div>
+    </div>
+
+  </div><!-- /resume-wrap -->
+
+  <footer>
+    <p>© 2025 Onkaar Grewal &nbsp;·&nbsp; <a href="index.html" style="color:var(--border2);">← Back to portfolio</a></p>
+  </footer>
+
+</body>
+</html>

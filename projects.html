@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root { --nav-h: 60px; }
+
+    .projects-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 9rem 2.5rem 5rem;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 4rem; }
+    .page-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--maroon-l);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .page-eyebrow::after { content: ''; display: block; width: 36px; height: 1px; background: var(--maroon-l); }
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .page-sub { font-size: 0.95rem; color: var(--muted); max-width: 480px; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding-bottom: 2.5rem;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .f-btn {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .f-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .f-btn.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+
+    /* ── PROJECT ROWS ── */
+    .project-list { display: flex; flex-direction: column; }
+
+    .project-row {
+      display: grid;
+      grid-template-columns: 52px 1fr 200px;
+      gap: 2.5rem;
+      align-items: start;
+      padding: 2.75rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .project-row:first-child { border-top: 1px solid var(--border); }
+    .project-row:hover { background: rgba(122,0,60,0.03); }
+    .project-row[data-hidden="true"] { display: none; }
+
+    .row-num {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--maroon-l);
+      padding-top: 0.4rem;
+    }
+
+    .row-body { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .row-badges { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .badge-featured {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid var(--maroon-l);
+      color: var(--maroon-l);
+    }
+
+    /* Clean sans title — no cursive */
+    .row-title {
+      font-family: var(--sans);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .row-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+    }
+
+    /* Unique insight — bold sans, no cursive */
+    .row-insight {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+      font-family: var(--sans);
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1.5;
+    }
+    .row-insight::before {
+      content: '↳';
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--gold-d);
+      flex-shrink: 0;
+    }
+
+    .row-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    /* Right column: image + meta */
+    .row-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      align-items: flex-end;
+    }
+
+    /* Thumbnail image — landscape */
+    .row-thumb {
+      width: 200px;
+      aspect-ratio: 16/10;
+      background: var(--bg3);
+      background-image:
+        repeating-linear-gradient(
+          -45deg, transparent, transparent 10px,
+          rgba(122,0,60,0.1) 10px, rgba(122,0,60,0.1) 11px
+        );
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .row-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      position: absolute; inset: 0;
+    }
+    /*
+      EDIT: Add project thumbnail images (small, landscape crops work best)
+      Naming: img/thumb-1.jpg, img/thumb-2.jpg, etc.
+      Can be the same files as the featured card images.
+    */
+
+    .row-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+    .row-year { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--border2); }
+    .row-status {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.55rem;
+      border: 1px solid;
+    }
+    .s-done    { border-color: #1e481e; color: #5ac05a; }
+    .s-going   { border-color: #4a3800; color: var(--gold); }
+    .s-planned { border-color: var(--border2); color: var(--muted); }
+
+    /* Empty state */
+    .empty { display: none; text-align: center; padding: 4rem 0; }
+    .empty p { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .project-row { grid-template-columns: 36px 1fr; gap: 1rem; }
+      .row-right { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">// OG</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="projects-wrap">
+
+    <header class="page-header fade-up">
+      <p class="page-eyebrow">Onkaar Grewal</p>
+      <h1 class="page-title">All Projects</h1>
+      <p class="page-sub">
+        A complete record of things I've built, simulated, and experimented with —
+        from personal curiosity to coursework that went beyond the assignment.
+      </p>
+    </header>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <button class="f-btn active" data-filter="all">All</button>
+      <button class="f-btn" data-filter="physics">Physics</button>
+      <button class="f-btn" data-filter="software">Software</button>
+      <button class="f-btn" data-filter="hardware">Hardware</button>
+      <button class="f-btn" data-filter="coursework">Coursework</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PROJECT LIST
+         ══════════════════════════════════════════
+         HOW TO ADD A PROJECT:
+         1. Copy a .project-row block below
+         2. Set data-category (space-separated): physics software hardware coursework
+         3. Update the row-num, title, desc, insight, tags, year, status
+         4. Add a thumbnail image in the row-right div
+         Status classes: s-done | s-going | s-planned
+         ═════════════════════════════════════════= -->
+    <div class="project-list" id="project-list">
+
+      <!-- 01 — Arduino Spectrometer -->
+      <div class="project-row fade-up" data-category="physics hardware">
+        <span class="row-num">01</span>
+        <div class="row-body">
+          <div class="row-badges">
+            <span class="badge-featured">Featured</span>
+          </div>
+          <h2 class="row-title">Arduino Spectrometer</h2>
+          <p class="row-desc">
+            Designed and assembled a low-cost visible-light spectrometer using a diffraction grating,
+            CCD line sensor, and Arduino Uno microcontroller. Wrote Python scripts for serial data
+            acquisition, wavelength calibration using known emission lines, and spectral visualisation.
+          </p>
+          <p class="row-insight">
+            Achieved ~2 nm wavelength resolution across 400–700 nm for under $30 in parts.
+          </p>
+          <div class="row-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Arduino</span>
+            <span class="tag">Optics</span>
+            <span class="tag">Signal Processing</span>
+            <span class="tag">Serial Comms</span>
+          </div>
+        </div>
+        <div class="row-right">
+          <div class="row-thumb">
+            <img src="img/thumb-1.jpg" alt="Arduino Spectrometer" onerror="this.style.display='none'" />
+          </div>
+          <div class="row-meta">
+            <span class="row-year">2024</span>
+            <span class="row-status s-done">Complete</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 — Double Pendulum -->
+      <div class="project-row fade-up" data-category="physics software">
+        <span class="row-num">02</span>
+        <div class="row-body">
+          <div class="row-badges">
+            <span class="badge-featured">Featured</span>
+          </div>
+          <h2 class="row-title">Double Pendulum Chaos Simulation</h2>
+          <p class="row-desc">
+            Numerically solved the Lagrangian equations of motion for a double pendulum using
+            4th-order Runge-Kutta integration in Python/SciPy. Generated phase-space portraits,
+            Poincaré sections, and real-time animations illustrating sensitivity to initial conditions.
+            Extended to compare energy conservation across different step sizes.
+          </p>
+          <p class="row-insight">
+            Systems diverge visibly from initial condition differences smaller than 0.001° — chaos made tangible.
+          </p>
+          <div class="row-tags">
+            <span class="tag">Python</span>
+            <span class="tag">SciPy</span>
+            <span class="tag">Matplotlib</span>
+            <span class="tag">Numerical Methods</span>
+            <span class="tag">Chaos Theory</span>
+          </div>
+        </div>
+        <div class="row-right">
+          <div class="row-thumb">
+            <img src="img/thumb-2.jpg" alt="Pendulum Simulation" onerror="this.style.display='none'" />
+          </div>
+          <div class="row-meta">
+            <span class="row-year">2024</span>
+            <span class="row-status s-done">Complete</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 — EDIT: your project -->
+      <div class="project-row fade-up" data-category="software">
+        <span class="row-num">03</span>
+        <div class="row-body">
+          <div class="row-badges"></div>
+          <h2 class="row-title">Your Project Title Here</h2>  <!-- EDIT -->
+          <p class="row-desc">
+            Describe the project in 3-5 sentences here. This page gives you more room than the
+            main page, so be specific: what tools, what problem, what result, what you learned.
+          </p>
+          <p class="row-insight">
+            The one sentence that makes a recruiter lean forward. A specific number or finding works best.
+          </p>
+          <div class="row-tags">
+            <span class="tag">Tag</span>
+            <span class="tag">Tag</span>
+          </div>
+        </div>
+        <div class="row-right">
+          <div class="row-thumb">
+            <img src="img/thumb-3.jpg" alt="" onerror="this.style.display='none'" />
+          </div>
+          <div class="row-meta">
+            <span class="row-year">2025</span>  <!-- EDIT -->
+            <span class="row-status s-going">Ongoing</span>  <!-- EDIT: s-done | s-going | s-planned -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 — EDIT: your project -->
+      <div class="project-row fade-up" data-category="coursework physics">
+        <span class="row-num">04</span>
+        <div class="row-body">
+          <div class="row-badges"></div>
+          <h2 class="row-title">Your Project Title Here</h2>  <!-- EDIT -->
+          <p class="row-desc">
+            Could be a strong lab report, a course capstone, a self-directed experiment, or anything
+            you built that you're proud of. Delete this row if you don't have a 4th project yet —
+            quality over quantity.
+          </p>
+          <p class="row-insight">
+            One sharp, specific insight or result. What would you tell someone at a career fair?
+          </p>
+          <div class="row-tags">
+            <span class="tag">Tag</span>
+            <span class="tag">Tag</span>
+          </div>
+        </div>
+        <div class="row-right">
+          <div class="row-thumb">
+            <img src="img/thumb-4.jpg" alt="" onerror="this.style.display='none'" />
+          </div>
+          <div class="row-meta">
+            <span class="row-year">2024</span>  <!-- EDIT -->
+            <span class="row-status s-planned">Planned</span>  <!-- EDIT -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /project-list -->
+
+    <div class="empty" id="empty">
+      <p>No projects in this category yet — check back soon.</p>
+    </div>
+
+  </div><!-- /projects-wrap -->
+
+  <footer>
+    <p>© 2025 Onkaar Grewal &nbsp;·&nbsp; <a href="index.html" style="color:var(--border2);">← Back to portfolio</a></p>
+  </footer>
+
+  <script>
+    const rows    = document.querySelectorAll('.project-row');
+    const buttons = document.querySelectorAll('.f-btn');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.filter;
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        let visible = 0;
+        rows.forEach(row => {
+          const cats = (row.dataset.category || '').split(' ');
+          const show = cat === 'all' || cats.includes(cat);
+          row.dataset.hidden = show ? 'false' : 'true';
+          if (show) visible++;
+        });
+
+        // Renumber visible rows
+        let n = 1;
+        rows.forEach(row => {
+          if (row.dataset.hidden !== 'true') {
+            row.querySelector('.row-num').textContent = String(n).padStart(2, '0');
+            n++;
+          }
+        });
+
+        document.getElementById('empty').style.display = visible === 0 ? 'block' : 'none';
+      });
+    });
+  </script>
+
+</body>
+</html>
