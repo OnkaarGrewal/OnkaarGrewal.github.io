@@ -3,727 +3,638 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Onkaar Grewal — Aerospace Engineering</title>
+  <title>Onkaar Grewal — Engineering Physics</title>
   <link rel="stylesheet" href="style.css" />
   <style>
+    /* ===== INDEX-SPECIFIC STYLES ===== */
+    :root { --nav-h: 96px; }
 
-    /* ══════════════════════════════════════
-       HERO
-    ══════════════════════════════════════ */
-    .hero {
-      height: 100svh; min-height: 600px;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 0 4vw 5vh;
-      position: relative; overflow: hidden;
+    /* ── HERO ── */
+    /* ── HERO — full-bleed split ── */
+    section#hero {
+      max-width: none;
+      padding: 0;
+      margin: 0;
+      border-top: none;
+      scroll-margin-top: 0;
     }
-
-    /* Background: optional full-bleed photo + atmospheric glow */
-    .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
-      /*
-        EDIT: Replace url() with a dramatic aerial / launch / atmospheric photo.
-        Suggested: a rocket launch, high-altitude aircraft, satellite imagery, or
-        a wide shot from inside a cockpit.
-      */
-      background-image: url('img/hero-bg.jpg');
-      background-size: cover;
-      background-position: center 40%;
-      opacity: 0.18; /* intentionally dim so text stays sharp */
+    #hero {
+      min-height: 100vh;
     }
-    /* Atmospheric glow — planet-horizon effect */
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 90% 55% at 50% 115%, rgba(249,115,22,0.22) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 40% at 95% 0%,   rgba(249,115,22,0.07) 0%, transparent 60%);
-    }
-    /* Subtle grain overlay — adds texture, less "digital flat" */
-    .hero::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      background-repeat: repeat;
-      background-size: 150px;
-      opacity: 0.6;
-    }
-
-    .hero-content { position: relative; z-index: 1; }
-
-    /* Top badge */
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      margin-bottom: 2.5rem;
-    }
-    .hero-badge-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--orange);
-      box-shadow: 0 0 8px var(--orange);
-    }
-    .hero-badge span {
-      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--orange-l);
-    }
-
-    /* Giant name — the visual anchor of the entire site */
-    .hero-name {
-      line-height: 0.85;
-      margin-bottom: 3.5rem;
-    }
-    .hero-name .n1,
-    .hero-name .n2 {
-      display: block;
-      font-family: var(--cond);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.01em;
-      font-size: clamp(5.5rem, 16vw, 17rem);
-    }
-    .hero-name .n1 { color: var(--text); }
-    /* Second name line: outlined / stroke only — editorial depth trick */
-    .hero-name .n2 {
-      color: transparent;
-      -webkit-text-stroke: 2px rgba(241,241,244,0.38);
-    }
-
-    /* Bottom bar */
-    .hero-foot {
+    .hero-inner {
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: end;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 1.75rem;
+      grid-template-columns: 1fr 50%;
+      min-height: 100vh;
+      align-items: stretch;
+      width: 100%;
     }
-    .hero-desc {
-      font-family: var(--sans); font-weight: 300;
-      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-      color: var(--muted2); max-width: 480px; line-height: 1.65;
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 9rem 3.5rem 5rem 5%;
     }
-    .hero-desc strong { color: var(--text); font-weight: 500; }
-    .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: flex-end; }
-
-    /* Scroll indicator */
+    .hero-eyebrow {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      font-weight: 700;
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-name span { display: block; color: var(--muted); font-weight: 400; }
+    .hero-tagline {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 2.75rem;
+      line-height: 1.7;
+    }
+    .hero-cta { display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; }
     .hero-scroll {
-      position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%);
-      z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      margin-top: 4rem;
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      color: var(--border2);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
-    .hero-scroll span { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
-    .scroll-line {
-      width: 1px; height: 48px; background: linear-gradient(var(--orange), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
+    .hero-scroll::before {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 44px;
+      background: var(--border2);
     }
-    @keyframes scrollPulse { 0%,100% { opacity: 0.4; transform: scaleY(0.7); } 50% { opacity: 1; transform: scaleY(1); } }
 
+    /* ── HERO PHOTO — fills right column at full viewport height ── */
+    .hero-photo-wrap {
+      position: relative;
+      height: 100%;
+      min-height: 100vh;
+      width: 100%;
+      overflow: visible; /* so the border peeks out */
+    }
+    /* Maroon chamfered border — same octagonal shape, slightly inset */
+    .hero-photo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--maroon);
+      clip-path: polygon(
+        0 22px, 22px 0,
+        calc(100% - 22px) 0, 100% 22px,
+        100% calc(100% - 22px), calc(100% - 22px) 100%,
+        22px 100%, 0 calc(100% - 22px)
+      );
+      opacity: 0.55;
+      z-index: -1;
+    }
+    .hero-photo-frame {
+      position: absolute;
+      inset: 4px; /* slight inset so maroon border shows */
+      clip-path: polygon(
+        0 18px, 18px 0,
+        calc(100% - 18px) 0, 100% 18px,
+        100% calc(100% - 18px), calc(100% - 18px) 100%,
+        18px 100%, 0 calc(100% - 18px)
+      );
+      background: var(--bg3);
+      background-image:
+        repeating-linear-gradient(
+          -45deg,
+          transparent, transparent 18px,
+          rgba(122,0,60,0.1) 18px, rgba(122,0,60,0.1) 19px
+        );
+      overflow: hidden;
+    }
+    /* Each photo slide */
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center center;
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+    .hero-slide.active { opacity: 1; }
+    /* EDIT: set these 5 background-images to your actual photos */
+    .hero-slide:nth-child(1) { background-image: url('img/hero-1.jpg'); }
+    .hero-slide:nth-child(2) { background-image: url('img/hero-2.jpg'); }
+    .hero-slide:nth-child(3) { background-image: url('img/hero-3.jpg'); }
+    .hero-slide:nth-child(4) { background-image: url('img/hero-4.jpg'); }
+    .hero-slide:nth-child(5) { background-image: url('img/hero-5.jpg'); }
 
-    /* ══════════════════════════════════════
-       ABOUT
-    ══════════════════════════════════════ */
-    #about {
-      padding: 8rem 4vw;
+    /* Slide indicators — larger, easier to click */
+    .hero-indicators {
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 4;
+      padding: 12px 14px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      border-radius: 2px;
+    }
+    .h-ind {
+      height: 5px;
+      width: 32px;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 2px;
+      /* Invisible padding to increase hit area */
+      padding: 8px 0;
+      background-clip: content-box;
+    }
+    .h-ind.active {
+      width: 56px;
+      background: var(--gold);
+      background-clip: content-box;
+    }
+    .hero-counter {
+      position: absolute;
+      bottom: 2.55rem;
+      right: 2rem;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.55);
+      z-index: 4;
+      pointer-events: none;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      padding: 0.4rem 0.7rem;
+      border-radius: 2px;
+    }
+
+    /* ── ABOUT SECTION ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 2rem;
+    }
+    .about-text p { color: var(--muted); margin-bottom: 1.1rem; font-size: 1rem; line-height: 1.75; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); font-weight: 700; }
+
+    /* 3-image collage */
+    .about-collage {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6rem;
-      align-items: start;
-      border-top: 1px solid var(--line);
+      grid-template-rows: 220px 170px;
+      gap: 0.6rem;
     }
-
-    .about-statement {
-      font-family: var(--cond); font-weight: 700;
-      font-size: clamp(2rem, 4.5vw, 3.4rem);
-      line-height: 1.1; letter-spacing: -0.01em;
-      color: var(--text);
-    }
-    .about-statement em { color: var(--orange); font-style: normal; }
-
-    .about-right { display: flex; flex-direction: column; gap: 2.5rem; }
-
-    .about-body {
-      font-size: 0.96rem; color: var(--muted2); line-height: 1.8;
-    }
-    .about-body p + p { margin-top: 1rem; }
-    .about-body strong { color: var(--text); font-weight: 500; }
-
-    /* Horizontal stat strip */
-    .about-stats {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--line);
-    }
-    .stat {
-      padding: 1.25rem 1.1rem;
-      border-right: 1px solid var(--line);
-      display: flex; flex-direction: column; gap: 0.3rem;
-    }
-    .stat:last-child { border-right: none; }
-    .stat-val {
-      font-family: var(--cond); font-weight: 900; font-size: 2rem;
-      letter-spacing: -0.02em; color: var(--text); line-height: 1;
-    }
-    .stat-key {
-      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--muted);
-    }
-
-    .about-link {
-      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--orange);
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      transition: gap 0.2s;
-    }
-    .about-link::after { content: '→'; }
-    .about-link:hover { gap: 0.85rem; color: var(--orange-l); }
-
-
-    /* ══════════════════════════════════════
-       FEATURED WORK
-    ══════════════════════════════════════ */
-    #work { padding: 0 4vw 8rem; border-top: 1px solid var(--line); }
-
-    .work-header {
-      display: flex; align-items: baseline; justify-content: space-between;
-      padding: 4rem 0 3rem;
-    }
-    .work-title {
-      font-family: var(--cond); font-weight: 900; font-size: clamp(2.2rem, 5vw, 4rem);
-      letter-spacing: -0.01em; text-transform: uppercase; color: var(--text);
-    }
-    .work-all {
-      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--muted);
-      transition: color 0.2s;
-    }
-    .work-all::after { content: ' →'; }
-    .work-all:hover { color: var(--orange); }
-
-    /* Project card — wide editorial style */
-    .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
-
-    .proj-card {
-      background: var(--s1);
-      display: flex; flex-direction: column;
+    .collage-cell {
+      background: var(--bg3);
+      background-image: repeating-linear-gradient(
+        -45deg, transparent, transparent 14px,
+        rgba(122,0,60,0.1) 14px, rgba(122,0,60,0.1) 15px
+      );
       overflow: hidden; position: relative;
-      transition: background 0.3s;
     }
-    .proj-card:hover { background: var(--s2); }
+    .collage-cell img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .collage-cell:first-child { grid-row: span 2; }
+    /*
+      PHOTOS: img/about-1.jpg (left tall), img/about-2.jpg (top right), img/about-3.jpg (bottom right)
+      Good options: iron ring ceremony, lab setup, McMaster campus, action shot
+    */
 
-    .proj-img {
-      height: 300px; width: 100%;
-      flex-shrink: 0;
+    /* Horizontal info strip */
+    .about-info-strip {
+      display: flex;
+      margin-top: 3rem;
+      border: 1px solid var(--border);
     }
-    /* EDIT: img/project-1.jpg, img/project-2.jpg — screenshots, lab photos, diagrams */
+    .about-info-item {
+      flex: 1;
+      padding: 1rem 1.2rem;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .about-info-item:last-child { border-right: none; }
+    .aii-label { font-family: var(--sans); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--maroon-l); }
+    .aii-value { font-size: 0.9rem; color: var(--text); }
 
-    .proj-body { padding: 2rem 2rem 2.5rem; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
+    /* ── EDUCATION ── */
+    .edu-block { margin-top: 2.5rem; border-left: 2px solid var(--maroon); padding-left: 2rem; }
+    .edu-degree { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .edu-school { font-family: var(--sans); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+    .edu-detail { font-size: 0.92rem; color: var(--muted); }
+    .edu-courses { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
-    .proj-head { display: flex; justify-content: space-between; align-items: center; }
-    .proj-num {
-      font-family: var(--cond); font-weight: 900; font-size: 3.5rem;
-      color: var(--line2); line-height: 1; letter-spacing: -0.02em;
-      transition: color 0.3s;
-    }
-    .proj-card:hover .proj-num { color: var(--orange); }
-    .proj-domain {
-      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--muted);
-    }
+    /* ── SKILLS ── */
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; }
+    .skill-card { padding: 1.75rem; border: 1px solid var(--border); background: var(--bg2); transition: border-color 0.25s; }
+    .skill-card:hover { border-color: var(--maroon-l); }
+    .skill-card-title { font-family: var(--sans); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.1rem; }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .skill-list li { font-size: 0.9rem; color: var(--muted); padding-left: 1.1rem; position: relative; line-height: 1.5; }
+    .skill-list li::before { content: '—'; position: absolute; left: 0; color: var(--maroon-l); }
 
-    .proj-title {
-      font-family: var(--cond); font-weight: 700;
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
-      letter-spacing: -0.01em; text-transform: uppercase;
-      color: var(--text); line-height: 1.15;
+    /* ── FEATURED PROJECTS ── */
+    .projects-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+    .view-all-link { font-family: var(--sans); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+    .view-all-link::after { content: ' ↗'; }
+    .view-all-link:hover { color: var(--gold); }
+    .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
+    .feat-card { border: 1px solid var(--border); background: var(--bg2); display: flex; flex-direction: column; overflow: hidden; transition: border-color 0.25s; }
+    .feat-card:hover { border-color: var(--maroon-l); }
+    .feat-img {
+      height: 260px; position: relative; flex-shrink: 0;
+      background: var(--bg3);
+      background-image: repeating-linear-gradient(135deg, transparent, transparent 10px, rgba(122,0,60,0.08) 10px, rgba(122,0,60,0.08) 11px);
+      overflow: hidden;
     }
-    .proj-desc { font-size: 0.88rem; color: var(--muted2); line-height: 1.65; }
+    .feat-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .feat-img-label {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 0.7rem 1.25rem;
+      font-family: var(--sans); font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.75);
+      background: linear-gradient(transparent, rgba(10,10,10,0.88));
+    }
+    .feat-body { padding: 1.75rem; display: flex; flex-direction: column; gap: 0.7rem; flex: 1; }
+    .feat-num { font-family: var(--sans); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--maroon-l); }
+    .feat-title { font-family: var(--sans); font-size: 1.3rem; font-weight: 700; line-height: 1.25; color: var(--text); }
+    .feat-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+    .feat-insight { border-left: 2px solid var(--gold); padding: 0.45rem 0.85rem; font-size: 0.85rem; font-family: var(--sans); font-weight: 700; color: var(--gold); line-height: 1.5; background: rgba(253,191,87,0.05); }
+    .feat-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; padding-top: 0.75rem; }
+    .projects-footer { margin-top: 2rem; display: flex; justify-content: center; }
 
-    .proj-insight {
-      font-family: var(--sans); font-weight: 700; font-size: 0.85rem;
-      color: var(--orange); line-height: 1.5;
-      border-left: 2px solid var(--orange); padding-left: 0.85rem;
-      background: rgba(249,115,22,0.06);
-    }
-
-    .proj-foot {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: auto; padding-top: 0.75rem;
-      border-top: 1px solid var(--line);
-    }
-    .proj-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .proj-year {
-      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted);
-    }
-
-
-    /* ══════════════════════════════════════
-       EXPERTISE
-    ══════════════════════════════════════ */
-    #expertise { padding: 8rem 4vw; border-top: 1px solid var(--line); }
-
-    .exp-head { margin-bottom: 4rem; }
-    .exp-heading {
-      font-family: var(--cond); font-weight: 900;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      letter-spacing: -0.01em; text-transform: uppercase;
-      color: var(--text); margin-top: 0.5rem;
-    }
-
-    .exp-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
-
-    .exp-block {
-      padding: 2.5rem 2rem; border-left: 1px solid var(--line);
-      position: relative; overflow: hidden;
-      transition: background 0.3s;
-    }
-    .exp-block:first-child { border-left: none; }
-    .exp-block:hover { background: var(--s1); }
-
-    .exp-n {
-      font-family: var(--cond); font-weight: 900;
-      font-size: 5.5rem; line-height: 1; letter-spacing: -0.04em;
-      color: var(--line); margin-bottom: 1.25rem;
-      transition: color 0.3s;
-    }
-    .exp-block:hover .exp-n { color: rgba(249,115,22,0.25); }
-
-    .exp-name {
-      font-family: var(--cond); font-weight: 700;
-      font-size: 1.5rem; text-transform: uppercase;
-      letter-spacing: 0.02em; color: var(--text);
-      margin-bottom: 0.75rem; line-height: 1.1;
-    }
-    .exp-desc { font-size: 0.85rem; color: var(--muted2); line-height: 1.7; margin-bottom: 1.5rem; }
-    .exp-list {
-      list-style: none; display: flex; flex-direction: column; gap: 0.35rem;
-    }
-    .exp-list li {
-      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
-      color: var(--muted); padding-left: 1rem; position: relative;
-    }
-    .exp-list li::before {
-      content: '—'; position: absolute; left: 0; color: var(--orange); opacity: 0.6;
-    }
-
-
-    /* ══════════════════════════════════════
-       EDUCATION
-    ══════════════════════════════════════ */
-    #education { padding: 8rem 4vw; border-top: 1px solid var(--line); }
-
-    .edu-grid {
-      display: grid; grid-template-columns: 1fr 1.6fr; gap: 6rem; align-items: start;
-      margin-top: 2.5rem;
-    }
-    .edu-left {}
-    .edu-school {
-      font-family: var(--cond); font-weight: 700; font-size: 1.75rem;
-      text-transform: uppercase; letter-spacing: 0.01em; color: var(--text);
-      margin-bottom: 0.35rem; line-height: 1.1;
-    }
-    .edu-degree {
-      font-size: 0.9rem; color: var(--muted2); margin-bottom: 2rem;
-    }
-    .edu-period {
-      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted);
-    }
-
-    .edu-right {}
-    .edu-courses-label {
-      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--orange); margin-bottom: 1rem;
-    }
-    .edu-courses { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
-    .course-pill {
-      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em;
-      padding: 0.3rem 0.75rem; border: 1px solid var(--line2); color: var(--muted2);
-    }
-
-    .awards { display: flex; flex-direction: column; gap: 0; }
-    .award-row {
-      display: flex; justify-content: space-between; align-items: baseline;
-      padding: 0.85rem 0; border-bottom: 1px solid var(--line); gap: 1rem;
-    }
-    .award-row:first-child { border-top: 1px solid var(--line); }
-    .award-name { font-size: 0.9rem; color: var(--text); font-weight: 400; }
-    .award-yr { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; color: var(--muted); }
-
-
-    /* ══════════════════════════════════════
-       CONTACT
-    ══════════════════════════════════════ */
-    #contact { padding: 8rem 4vw; border-top: 1px solid var(--line); }
-
-    .contact-inner {
-      display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: end;
-    }
-    .contact-statement {
-      font-family: var(--cond); font-weight: 900; text-transform: uppercase;
-      font-size: clamp(3rem, 8vw, 7.5rem); letter-spacing: -0.02em;
-      line-height: 0.9; color: var(--text);
-    }
-    .contact-statement em { color: var(--orange); font-style: normal; display: block; }
-
-    .contact-right { display: flex; flex-direction: column; gap: 2rem; min-width: 260px; }
-    .contact-email {
-      font-family: var(--mono); font-size: 0.88rem; letter-spacing: 0.04em;
-      color: var(--orange-l); transition: color 0.2s;
-    }
-    .contact-email:hover { color: #fff; }
-    .contact-links { display: flex; flex-direction: column; gap: 0; }
-    .contact-link {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.85rem 0; border-bottom: 1px solid var(--line);
-      font-size: 0.88rem; color: var(--muted2);
-      transition: color 0.2s, padding-left 0.2s;
-    }
-    .contact-link:first-child { border-top: 1px solid var(--line); }
-    .contact-link:hover { color: var(--text); padding-left: 0.5rem; }
-    .contact-link span { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .contact-available {
-      display: flex; align-items: center; gap: 0.6rem;
-      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--muted2);
-    }
-    .avail-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: #22C55E;
-      box-shadow: 0 0 8px #22C55E; flex-shrink: 0;
-    }
+    /* ── CONTACT ── */
+    .contact-intro { font-family: var(--serif); font-size: 2rem; font-weight: 400; max-width: 600px; line-height: 1.35; margin: 1.75rem 0 1.25rem; }
+    .contact-links { display: flex; flex-direction: column; margin-top: 2.5rem; }
+    .contact-item { display: flex; align-items: baseline; justify-content: space-between; padding: 1.1rem 0; border-bottom: 1px solid var(--border); transition: padding-left 0.2s; }
+    .contact-item:first-child { border-top: 1px solid var(--border); }
+    .contact-item:hover { padding-left: 0.5rem; }
+    .contact-platform { font-family: var(--sans); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .contact-handle { font-size: 0.92rem; color: var(--text); transition: color 0.2s; }
+    .contact-item:hover .contact-handle { color: var(--gold); }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      #about { grid-template-columns: 1fr; gap: 3rem; }
-      .proj-grid { grid-template-columns: 1fr; }
-      .exp-grid { grid-template-columns: 1fr 1fr; }
-      .exp-block:nth-child(2) { border-top: 1px solid var(--line); }
-      .edu-grid { grid-template-columns: 1fr; gap: 3rem; }
-      .contact-inner { grid-template-columns: 1fr; }
+    @media (max-width: 1000px) {
+      .hero-inner { grid-template-columns: 1fr; min-height: auto; }
+      .hero-text { padding: 9rem 2.5rem 3rem; }
+      .hero-photo-wrap { min-height: 55vw; max-height: 480px; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
     }
-    @media (max-width: 600px) {
-      .hero-foot { grid-template-columns: 1fr; }
-      .hero-actions { justify-content: flex-start; }
-      .exp-grid { grid-template-columns: 1fr; }
-      .exp-block { border-left: none; border-top: 1px solid var(--line); }
-      .exp-block:first-child { border-top: none; }
-      .about-stats { grid-template-columns: 1fr 1fr; }
-      .stat:nth-child(3) { grid-column: span 2; border-top: 1px solid var(--line); border-right: none; }
+    @media (max-width: 640px) {
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .about-collage { grid-template-columns: 1fr 1fr; grid-template-rows: 180px 180px; }
+      .collage-cell:first-child { grid-row: auto; }
+      .about-info-strip { flex-wrap: wrap; }
+      .about-info-item { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
+    }
+    @media (max-width: 420px) {
+      .skills-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <a href="index.html" class="nav-brand">Onkaar Grewal</a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#work">Work</a></li>
-      <li><a href="about.html">More</a></li>
-      <li><a href="resume.html" class="cta">Résumé</a></li>
-    </ul>
+  <!-- ===== NAV ===== -->
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+    <!-- Section anchors — only on this page -->
+    <div class="nav-sections">
+      <a href="#about">About</a>
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
   </nav>
 
-  <!-- ══ HERO ══ -->
-  <section class="hero">
-    <div class="hero-bg"></div>
+  <!-- ===== HERO ===== -->
+  <section id="hero">
+    <div class="hero-inner">
 
-    <div class="hero-content">
-      <div class="hero-badge fu">
-        <span class="hero-badge-dot"></span>
-        <span>Available for co-op &amp; internships — 2025</span>
-      </div>
-
-      <div class="hero-name fu fu1" aria-label="Onkaar Grewal">
-        <span class="n1">Onkaar</span>
-        <span class="n2">Grewal</span>
-      </div>
-
-      <div class="hero-foot fu fu2">
-        <p class="hero-desc">
-          <strong>Engineering Physics undergraduate</strong> at McMaster University,
-          pursuing aerospace engineering. <!-- EDIT: add your specific focus, e.g. propulsion, structures, GNC -->
-          Interested in the problems that are hardest to solve and most worth solving.
+      <!-- Text -->
+      <div class="hero-text">
+        <p class="hero-eyebrow fade-up">Available for internships &amp; co-ops — 2025</p>  <!-- EDIT: term/year -->
+        <h1 class="hero-name fade-up d1">
+          Onkaar<span>Grewal</span>
+        </h1>
+        <p class="hero-tagline fade-up d2">
+          Engineering Physics undergraduate at McMaster University — where
+          <!-- EDIT: your actual research interests -->
+          first-principles thinking meets hands-on engineering.
         </p>
-        <div class="hero-actions">
-          <a href="#work" class="btn btn-solid">View projects</a>
-          <a href="resume.html" class="btn btn-ghost">Résumé ↗</a>
+        <div class="hero-cta fade-up d3">
+          <a href="projects.html" class="btn btn-primary">View projects ↗</a>
+          <a href="resume.html" class="btn btn-outline">Résumé</a>
+          <a href="#contact" class="btn btn-outline">Get in touch</a>
+        </div>
+        <p class="hero-scroll fade-up d4">Scroll to explore</p>
+      </div>
+
+      <!-- Photo carousel -->
+      <!--
+        PHOTO SETUP:
+        Create a folder called "img/" in your repo.
+        Add 5 photos named: hero-1.jpg, hero-2.jpg, hero-3.jpg, hero-4.jpg, hero-5.jpg
+        They will fade through automatically every 4 seconds.
+        Aspect ratio ~3:4 works best. Centre your face in frame.
+      -->
+      <div class="hero-photo-wrap fade-up d2" aria-label="Photos of Onkaar Grewal">
+        <div class="hero-photo-frame">
+          <div class="hero-slide active"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+          <span class="hero-counter" id="hero-counter">1 / 5</span>
+        </div>
+        <div class="hero-indicators" id="hero-indicators">
+          <span class="h-ind active"></span>
+          <span class="h-ind"></span>
+          <span class="h-ind"></span>
+          <span class="h-ind"></span>
+          <span class="h-ind"></span>
         </div>
       </div>
-    </div>
 
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      <span>Scroll</span>
     </div>
   </section>
 
-
-  <!-- ══ ABOUT ══ -->
+  <!-- ===== ABOUT ===== -->
   <section id="about">
-    <div class="about-left">
-      <p class="label" style="margin-bottom:1.25rem;">About</p>
-      <h2 class="about-statement fu">
-        Physics is how I understand the world.<br>
-        <em>Aerospace</em> is where I want to apply it.
-      </h2>
-    </div>
+    <p class="section-label">About</p>
+    <div class="about-grid">
 
-    <div class="about-right fu fu2">
-      <div class="about-body">
-        <!-- EDIT: your actual paragraphs -->
+      <div class="about-text">
+        <!-- EDIT: 2-3 paragraphs about yourself -->
         <p>
-          I'm a first-year Engineering Physics student at McMaster University
-          with a strong foundation in classical mechanics, electrodynamics, and
-          mathematical modelling. I'm drawn to problems where the physics is
-          hard and the stakes are real.
+          I'm a first-year Engineering Physics student at McMaster University with a foundation in
+          mathematics, classical mechanics, and electromagnetic theory. I'm drawn to problems at the
+          boundary of physics and engineering — where rigorous thinking meets something you can actually build.
         </p>
         <p>
-          When I'm not in class or working on simulations, I climb, play
-          volleyball, and shoot photography — hobbies that have taught me more
-          about patience and precision than any lecture.
+          Outside of coursework I spend time on <strong>rock climbing, volleyball, and photography</strong> —
+          three things that teach patience and problem-solving in ways a lecture hall can't. I learn fastest
+          by building things and breaking them.
+        </p>
+        <p>
+          I'm actively seeking internships and research positions where I can contribute and keep growing.
+          <a href="about.html" style="color:var(--gold)">More about me →</a>
         </p>
       </div>
 
-      <div class="about-stats">
-        <div class="stat">
-          <span class="stat-val">2028</span>
-          <span class="stat-key">Graduation</span>
+      <!-- 3-image collage -->
+      <div class="about-collage">
+        <div class="collage-cell">
+          <img src="img/about-1.jpg" alt="Onkaar Grewal" onerror="this.style.display='none'" />
         </div>
-        <div class="stat">
-          <span class="stat-val">B.Eng</span><!-- EDIT -->
-          <span class="stat-key">Degree</span>
+        <div class="collage-cell">
+          <img src="img/about-2.jpg" alt="" onerror="this.style.display='none'" />
         </div>
-        <div class="stat">
-          <span class="stat-val">HAM</span>
-          <span class="stat-key">Location</span>
+        <div class="collage-cell">
+          <img src="img/about-3.jpg" alt="" onerror="this.style.display='none'" />
         </div>
       </div>
 
-      <a href="about.html" class="about-link">Full profile</a>
+    </div>
+
+    <!-- Horizontal info strip — full width below -->
+    <div class="about-info-strip">
+      <!-- EDIT: your actual details -->
+      <div class="about-info-item">
+        <span class="aii-label">Location</span>
+        <span class="aii-value">Hamilton, ON</span>
+      </div>
+      <div class="about-info-item">
+        <span class="aii-label">Degree</span>
+        <span class="aii-value">B.Eng Physics</span>
+      </div>
+      <div class="about-info-item">
+        <span class="aii-label">University</span>
+        <span class="aii-value">McMaster</span>
+      </div>
+      <div class="about-info-item">
+        <span class="aii-label">Grad Year</span>
+        <span class="aii-value">2028</span>  <!-- EDIT -->
+      </div>
+      <div class="about-info-item">
+        <span class="aii-label">Interests</span>
+        <span class="aii-value">Aerospace · Photonics</span>  <!-- EDIT -->
+      </div>
     </div>
   </section>
 
-
-  <!-- ══ FEATURED WORK ══ -->
-  <section id="work">
-    <div class="work-header">
-      <h2 class="work-title">Featured Work</h2>
-      <a href="projects.html" class="work-all">All projects</a>
-    </div>
-
-    <div class="proj-grid">
-
-      <!-- PROJECT 1 — EDIT everything -->
-      <article class="proj-card">
-        <div class="proj-img ph">
-          <!-- EDIT: add img/project-1.jpg — photo or screenshot of the project -->
-          <img src="img/project-1.jpg" alt="Arduino Spectrometer" onerror="this.style.display='none'" />
-        </div>
-        <div class="proj-body">
-          <div class="proj-head">
-            <span class="proj-num">01</span>
-            <span class="proj-domain">Hardware / Optics</span>
-          </div>
-          <h3 class="proj-title">Arduino Spectrometer</h3>
-          <p class="proj-desc">
-            Built a low-cost visible-light spectrometer using a diffraction grating,
-            CCD line sensor, and Arduino Uno. Python scripts handle serial acquisition,
-            emission-line calibration, and spectral visualisation.
-          </p>
-          <p class="proj-insight">
-            ~2 nm wavelength resolution across 400–700 nm, built for under $30.
-          </p>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="tag">Python</span>
-              <span class="tag">Arduino</span>
-              <span class="tag">Optics</span>
-            </div>
-            <span class="proj-year">2024</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- PROJECT 2 — EDIT everything -->
-      <article class="proj-card">
-        <div class="proj-img ph">
-          <!-- EDIT: add img/project-2.jpg — phase space diagram, animation frame -->
-          <img src="img/project-2.jpg" alt="Chaos Simulation" onerror="this.style.display='none'" />
-        </div>
-        <div class="proj-body">
-          <div class="proj-head">
-            <span class="proj-num">02</span>
-            <span class="proj-domain">Simulation / Dynamics</span>
-          </div>
-          <h3 class="proj-title">Double Pendulum Chaos</h3>
-          <p class="proj-desc">
-            Numerically solved Lagrangian equations for a double pendulum via
-            4th-order Runge-Kutta integration. Generated phase-space portraits
-            and Poincaré sections showing chaotic sensitivity.
-          </p>
-          <p class="proj-insight">
-            Divergence visible from initial condition differences under 0.001°.
-          </p>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="tag">Python</span>
-              <span class="tag">SciPy</span>
-              <span class="tag">Chaos Theory</span>
-            </div>
-            <span class="proj-year">2024</span>
-          </div>
-        </div>
-      </article>
-
+  <!-- ===== EDUCATION ===== -->
+  <section id="education">
+    <p class="section-label">Education</p>
+    <div class="edu-block">
+      <p class="edu-school">McMaster University — Hamilton, ON</p>
+      <h2 class="edu-degree">B.Eng. Engineering Physics</h2>
+      <p class="edu-detail">September 2024 – April 2028</p>  <!-- EDIT -->
+      <div class="edu-courses">
+        <!-- EDIT: your actual courses -->
+        <span class="pill">Classical Mechanics</span>
+        <span class="pill">Electromagnetism</span>
+        <span class="pill">Linear Algebra</span>
+        <span class="pill">Calculus III</span>
+        <span class="pill">Thermodynamics</span>
+        <span class="pill">Intro to Programming</span>
+        <span class="pill">Engineering Design</span>
+      </div>
     </div>
   </section>
 
-
-  <!-- ══ EXPERTISE ══ -->
-  <section id="expertise">
-    <div class="exp-head">
-      <p class="label">Domains</p>
-      <h2 class="exp-heading">What I Work With</h2>
-    </div>
-
-    <div class="exp-grid">
-      <!-- EDIT: update all three blocks to reflect your actual skills -->
-      <div class="exp-block">
-        <div class="exp-n">01</div>
-        <h3 class="exp-name">Computing &amp;<br>Simulation</h3>
-        <p class="exp-desc">
-          Numerical methods, scientific computing, and data visualisation
-          applied to physics and engineering problems.
-        </p>
-        <ul class="exp-list">
-          <li>Python — NumPy, SciPy, Matplotlib</li>
+  <!-- ===== SKILLS ===== -->
+  <section id="skills">
+    <p class="section-label">Skills</p>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <p class="skill-card-title">Computing & Simulation</p>
+        <ul class="skill-list">
+          <li>Python (NumPy, SciPy, Matplotlib)</li>
           <li>MATLAB / Simulink</li>
           <li>C / C++</li>
-          <li>Runge-Kutta integration</li>
-          <li>Git &amp; version control</li>
+          <li>LaTeX</li>
+          <li>Git &amp; GitHub</li>
         </ul>
       </div>
-
-      <div class="exp-block">
-        <div class="exp-n">02</div>
-        <h3 class="exp-name">Aerospace &amp;<br>Physics</h3>
-        <p class="exp-desc">
-          Classical and Lagrangian mechanics, orbital dynamics, fluid mechanics,
-          thermodynamics, and propulsion fundamentals.
-        </p>
-        <ul class="exp-list">
+      <div class="skill-card">
+        <p class="skill-card-title">Aerospace & Physics</p>
+        <ul class="skill-list">
           <li>Orbital mechanics (intro)</li>
           <li>Fluid dynamics &amp; aerodynamics</li>
           <li>Thermodynamics &amp; propulsion</li>
-          <li>Structural / stress analysis</li>
-          <li>Electrodynamics</li>
+          <li>Classical &amp; Lagrangian mechanics</li>
+          <li>Structural &amp; stress analysis</li>
         </ul>
       </div>
-
-      <div class="exp-block">
-        <div class="exp-n">03</div>
-        <h3 class="exp-name">Engineering<br>Tools</h3>
-        <p class="exp-desc">
-          CAD, FEA, lab instrumentation, and embedded systems used in
-          hands-on project and coursework contexts.
-        </p>
-        <ul class="exp-list">
+      <div class="skill-card">
+        <p class="skill-card-title">Tools & Lab</p>
+        <ul class="skill-list">
           <li>SolidWorks (CAD)</li>
           <li>ANSYS / FEA (intro)</li>
           <li>OpenFOAM (intro)</li>
-          <li>Arduino / embedded systems</li>
+          <li>Arduino / Embedded systems</li>
           <li>Oscilloscope &amp; lab instruments</li>
         </ul>
       </div>
     </div>
   </section>
 
+  <!-- ===== FEATURED PROJECTS ===== -->
+  <section id="projects">
+    <div class="projects-header">
+      <p class="section-label" style="margin-bottom:0;">Featured Projects</p>
+      <a href="projects.html" class="view-all-link">All projects</a>
+    </div>
 
-  <!-- ══ EDUCATION ══ -->
-  <section id="education">
-    <p class="label" style="margin-bottom:1.25rem;">Education</p>
-    <div class="edu-grid">
-      <div class="edu-left">
-        <h2 class="edu-school">McMaster<br>University</h2>
-        <p class="edu-degree">B.Eng. Engineering Physics</p>
-        <p class="edu-period">SEP 2024 — APR 2028</p><!-- EDIT -->
-      </div>
-      <div class="edu-right">
-        <p class="edu-courses-label">Coursework</p>
-        <div class="edu-courses">
-          <!-- EDIT: your actual courses -->
-          <span class="course-pill">Classical Mechanics</span>
-          <span class="course-pill">Electrodynamics</span>
-          <span class="course-pill">Linear Algebra</span>
-          <span class="course-pill">Multivariable Calculus</span>
-          <span class="course-pill">Thermodynamics</span>
-          <span class="course-pill">Engineering Design</span>
-          <span class="course-pill">Intro to Programming</span>
-        </div>
+    <div class="featured-grid">
 
-        <div class="awards">
-          <!-- EDIT: add real awards/scholarships/achievements, or delete rows -->
-          <div class="award-row">
-            <span class="award-name">Dean's Entrance Award</span><!-- EDIT or remove -->
-            <span class="award-yr">2024</span>
+      <!-- FEATURED PROJECT 1 — EDIT -->
+      <div class="feat-card">
+        <div class="feat-img">
+          <!--
+            EDIT: Add img/project-1.jpg (a photo or screenshot of this project)
+            e.g. your spectrometer setup, a plot output, a photo of the hardware
+          -->
+          <img src="img/project-1.jpg" alt="Arduino Spectrometer" onerror="this.style.display='none'" />
+          <span class="feat-img-label">Hardware &amp; Optics</span>
+        </div>
+        <div class="feat-body">
+          <span class="feat-num">01 — Featured</span>
+          <h3 class="feat-title">Arduino Spectrometer</h3>
+          <p class="feat-desc">
+            Built a visible-light spectrometer using a diffraction grating and CCD sensor,
+            with Python scripts for serial acquisition and spectral calibration.
+          </p>
+          <div class="feat-insight">
+            "~2 nm wavelength resolution across the full visible spectrum — built for under $30."
           </div>
-          <div class="award-row">
-            <span class="award-name">Your Achievement Here</span><!-- EDIT or remove -->
-            <span class="award-yr">2024</span>
+          <div class="feat-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Arduino</span>
+            <span class="tag">Optics</span>
+            <span class="tag">Signal Processing</span>
           </div>
         </div>
       </div>
+
+      <!-- FEATURED PROJECT 2 — EDIT -->
+      <div class="feat-card">
+        <div class="feat-img">
+          <!--
+            EDIT: Add img/project-2.jpg (e.g. a phase-space diagram output, animation frame)
+          -->
+          <img src="img/project-2.jpg" alt="Chaos Simulation" onerror="this.style.display='none'" />
+          <span class="feat-img-label">Simulation &amp; Dynamics</span>
+        </div>
+        <div class="feat-body">
+          <span class="feat-num">02 — Featured</span>
+          <h3 class="feat-title">Double Pendulum Chaos</h3>
+          <p class="feat-desc">
+            Numerically solved a double pendulum system with 4th-order Runge-Kutta integration,
+            generating phase-space portraits and Poincaré sections.
+          </p>
+          <div class="feat-insight">
+            "Divergence from perturbations smaller than 0.001° — chaos made visible."
+          </div>
+          <div class="feat-tags">
+            <span class="tag">Python</span>
+            <span class="tag">SciPy</span>
+            <span class="tag">Numerical Methods</span>
+            <span class="tag">Chaos Theory</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="projects-footer">
+      <a href="projects.html" class="btn btn-outline">View all projects ↗</a>
     </div>
   </section>
 
-
-  <!-- ══ CONTACT ══ -->
+  <!-- ===== CONTACT ===== -->
   <section id="contact">
-    <div class="contact-inner">
-      <div>
-        <p class="label" style="margin-bottom:1.5rem;">Contact</p>
-        <h2 class="contact-statement">
-          Hard problems<br>are better<br><em>with backup.</em>
-        </h2>
-      </div>
-
-      <div class="contact-right">
-        <div class="contact-available">
-          <span class="avail-dot"></span>
-          <span>Open to co-ops &amp; research — 2025</span><!-- EDIT -->
-        </div>
-
-        <!-- EDIT: your actual email -->
-        <a class="contact-email" href="mailto:grewalo@mcmaster.ca">grewalo@mcmaster.ca</a>
-
-        <div class="contact-links">
-          <a class="contact-link" href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener">
-            LinkedIn
-            <span>↗</span>
-          </a>
-          <a class="contact-link" href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener">
-            GitHub
-            <span>↗</span>
-          </a>
-          <a class="contact-link" href="resume.html">
-            Résumé (PDF)
-            <span>↗</span>
-          </a>
-        </div>
-      </div>
+    <p class="section-label">Contact</p>
+    <p class="contact-intro">
+      Hard problems are better tackled with good people in the room.
+    </p>
+    <p style="color:var(--muted); max-width:520px; font-size:0.97rem; line-height:1.7;">
+      I'm looking for co-op and research positions where I can apply my physics background to
+      real engineering challenges. If you're working on something serious, I'd like to contribute.
+    </p>
+    <div class="contact-links">
+      <a class="contact-item" href="mailto:grewalo@mcmaster.ca">  <!-- EDIT: your McMaster email -->
+        <span class="contact-platform">Email</span>
+        <span class="contact-handle">grewalo@mcmaster.ca ↗</span>
+      </a>
+      <a class="contact-item" href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener">
+        <span class="contact-platform">LinkedIn</span>
+        <span class="contact-handle">linkedin.com/in/onkaar-grewal ↗</span>
+      </a>
+      <a class="contact-item" href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener">
+        <span class="contact-platform">GitHub</span>
+        <span class="contact-handle">github.com/OnkaarGrewal ↗</span>
+      </a>
     </div>
   </section>
 
   <footer>
-    <p>© 2025 Onkaar Grewal &nbsp;·&nbsp; Engineering Physics · McMaster</p>
-    <nav class="foot-links">
-      <a href="about.html">About</a>
-      <a href="projects.html">Projects</a>
-      <a href="resume.html">Résumé</a>
-    </nav>
+    <p>© 2025 Onkaar Grewal &nbsp;·&nbsp; Built with HTML &amp; CSS &nbsp;·&nbsp; Hosted on GitHub Pages</p>
   </footer>
 
+  <!-- ===== HERO CAROUSEL SCRIPT ===== -->
   <script>
-    // Nav scroll behaviour
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 60);
+    const slides     = document.querySelectorAll('.hero-slide');
+    const indicators = document.querySelectorAll('.h-ind');
+    const counter    = document.getElementById('hero-counter');
+    let current = 0;
+    let timer;
+
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      indicators[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      indicators[current].classList.add('active');
+      counter.textContent = (current + 1) + ' / ' + slides.length;
+    }
+
+    function startTimer() {
+      timer = setInterval(() => goTo(current + 1), 4200);
+    }
+
+    // Clickable indicators
+    indicators.forEach((ind, i) => {
+      ind.addEventListener('click', () => {
+        clearInterval(timer);
+        goTo(i);
+        startTimer();
+      });
     });
+
+    startTimer();
   </script>
 
 </body>
