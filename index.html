@@ -119,19 +119,9 @@
         );
       overflow: hidden;
     }
-    /* Scroll indicator */
-    .hero-scroll {
-      position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%);
-      z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-    }
-    .hero-scroll span { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
-    .scroll-line {
-      width: 1px; height: 48px; background: linear-gradient(var(--orange), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-    @keyframes scrollPulse { 0%,100% { opacity: 0.4; transform: scaleY(0.7); } 50% { opacity: 1; transform: scaleY(1); } }
+    
     /* Each photo slide */
-    /*/.hero-slide {
+    /.hero-slide {
       position: absolute;
       inset: 0;
       background-size: cover;
@@ -141,14 +131,14 @@
     }
     .hero-slide.active { opacity: 10; }
     /* EDIT: set these 5 background-images to your actual photos */
-    /*.hero-slide:nth-child(1) { background-image: url('img/hero-1.jpg'); }
+    .hero-slide:nth-child(1) { background-image: url('img/hero-1.jpg'); }
     .hero-slide:nth-child(2) { background-image: url('img/hero-2.jpg'); }
     .hero-slide:nth-child(3) { background-image: url('img/hero-3.jpg'); }
     .hero-slide:nth-child(4) { background-image: url('img/hero-4.jpg'); }
     .hero-slide:nth-child(5) { background-image: url('img/hero-5.jpg'); }
 
     /* Slide indicators — larger, easier to click */
-    /*.hero-indicators {
+    .hero-indicators {
       position: absolute;
       bottom: 2rem;
       left: 2rem;
@@ -161,7 +151,7 @@
       backdrop-filter: blur(6px);
       border-radius: 2px;
     }
-    /*.h-ind {
+    .h-ind {
       height: 5px;
       width: 32px;
       background: rgba(255,255,255,0.3);
@@ -169,15 +159,15 @@
       transition: all 0.3s;
       border-radius: 2px;
       /* Invisible padding to increase hit area */
-      /*padding: 8px 0;
+      padding: 8px 0;
       background-clip: content-box;
     }
-   /* .h-ind.active {
+    .h-ind.active {
       width: 56px;
       background: var(--gold);
       background-clip: content-box;
     }
-    /*.hero-counter {
+    .hero-counter {
       position: absolute;
       bottom: 2.55rem;
       right: 2rem;
