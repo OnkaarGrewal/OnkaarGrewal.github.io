@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheelchair Launcher — Case Study · Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    /* ── NAV PAD ── */
+    .nav-pad { padding-top: var(--nav-h); }
+
+    /* ── CASE HEADER ── */
+    .case-header {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+      padding: 4rem 3rem 3rem;
+      border-bottom: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: end;
+    }
+    .case-back {
+      font-family: var(--sans); font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 1.75rem; transition: color 0.2s;
+    }
+    .case-back::before { content: '←'; }
+    .case-back:hover { color: var(--gold); }
+    .case-domain {
+      font-family: var(--sans); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--maroon-l); margin-bottom: 0.75rem;
+    }
+    .case-title {
+      font-family: var(--serif); font-weight: 700;
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+    .case-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .meta-key { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .meta-val { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+    .case-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; align-self: end; }
+
+    /* ── MEDIA VIEWER — full-width, tall ── */
+    .case-viewer-wrap {
+      position: relative; z-index: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    /* Re-use .proj-media for tab system, override height */
+    .case-viewer-wrap .proj-media {
+      height: 65vh; min-height: 440px;
+      border-radius: 0;
+    }
+    .case-viewer-wrap .media-tabs { top: 1.25rem; left: 1.5rem; }
+    .case-viewer-wrap .m-tab { font-size: 0.68rem; padding: 0.42rem 1rem; }
+    .case-viewer-wrap .proj-category { top: 1.3rem; right: 1.5rem; }
+    .case-viewer-wrap .model-footer { padding: 0.75rem 1.5rem; }
+    .case-viewer-wrap .model-hint { font-size: 0.65rem; }
+    .case-viewer-wrap .m-ctrl { font-size: 0.62rem; padding: 0.35rem 0.85rem; }
+
+    /* Export hint box */
+    .export-hint {
+      position: relative; z-index: 1;
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .export-hint p { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); line-height: 1.6; }
+    .export-hint code {
+      font-family: var(--mono); font-size: 0.7rem; padding: 0.25rem 0.6rem;
+      background: var(--bg3); border: 1px solid var(--border2); color: var(--gold-d);
+    }
+
+    /* ── CASE BODY ── */
+    .case-body {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+      padding: 5rem 3rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; border-bottom: 1px solid var(--border);
+    }
+    .case-section-title {
+      font-family: var(--serif); font-weight: 700; font-size: 1.4rem;
+      color: var(--text); margin-bottom: 1.25rem; line-height: 1;
+    }
+    .case-section-title::before { content: '// '; color: var(--maroon-l); font-family: var(--mono); font-size: 0.9rem; }
+    .case-text { font-size: 0.92rem; color: var(--muted2); line-height: 1.78; }
+    .case-text p + p { margin-top: 0.85rem; }
+    .case-text strong { color: var(--text); font-weight: 600; }
+
+    /* Specs table */
+    .spec-table { display: flex; flex-direction: column; border: 1px solid var(--border); }
+    .spec-row {
+      display: grid; grid-template-columns: 1fr 1.3fr;
+      border-bottom: 1px solid var(--border); padding: 0.8rem 1.1rem; gap: 1rem;
+    }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-k { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .spec-v { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+
+    /* Outcomes */
+    .outcome-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .outcome {
+      display: flex; gap: 1rem; align-items: start;
+      padding: 1.1rem; border: 1px solid var(--border); background: var(--bg2);
+    }
+    .outcome-dot { color: var(--gold); font-size: 0.9rem; flex-shrink: 0; margin-top: 0.15rem; }
+    .outcome-text { font-size: 0.875rem; color: var(--muted2); line-height: 1.65; }
+    .outcome-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 0.2rem; }
+
+    /* ── EXPORT INSTRUCTIONS ── */
+    .instructions {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+      padding: 4rem 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .inst-title { font-family: var(--serif); font-weight: 700; font-size: 1.3rem; color: var(--text); margin-bottom: 0.5rem; }
+    .inst-sub { font-size: 0.88rem; color: var(--muted2); margin-bottom: 1.75rem; }
+    .inst-steps { display: flex; flex-direction: column; gap: 0.5rem; counter-reset: s; }
+    .inst-step {
+      display: flex; gap: 1.25rem; align-items: baseline;
+      font-size: 0.88rem; color: var(--muted2); line-height: 1.6;
+    }
+    .inst-step::before {
+      counter-increment: s; content: counter(s) '.';
+      font-family: var(--mono); font-size: 0.7rem; color: var(--gold);
+      font-weight: 700; flex-shrink: 0; width: 16px;
+    }
+    .inst-step code { font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.45rem; background: var(--bg3); border: 1px solid var(--border2); color: var(--gold-d); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .case-header { grid-template-columns: 1fr; }
+      .case-body { grid-template-columns: 1fr; gap: 3rem; }
+      .case-viewer-wrap .proj-media { height: 50vh; min-height: 320px; }
+    }
+    @media (max-width: 600px) {
+      .case-header { padding: 3rem 1.5rem 2.5rem; }
+      .export-hint { padding: 1rem 1.5rem; }
+      .case-body { padding: 3.5rem 1.5rem; }
+      .instructions { padding: 3rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="nav-pad"></div>
+
+  <!-- ── CASE HEADER ── -->
+  <header class="case-header">
+    <div>
+      <a href="projects.html" class="case-back">All Projects</a>
+      <p class="case-domain">Mechanical Design · ENGINEER 1P13 · 2025</p>
+      <h1 class="case-title">Wheelchair-Mounted<br>Assistive Launcher</h1>
+      <div class="case-meta">
+        <div class="meta-item">
+          <span class="meta-key">Tools</span>
+          <span class="meta-val">SolidWorks, Granta EduPack</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">Role</span>
+          <span class="meta-val">Mechanical CAD Lead</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">Context</span>
+          <span class="meta-val">McMaster ENGINEER 1P13</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">Status</span>
+          <span class="meta-val" style="color:#4ADE80;">Complete</span>
+        </div>
+      </div>
+    </div>
+    <div class="case-tags">
+      <span class="tag">SolidWorks</span>
+      <span class="tag">Granta EduPack</span>
+      <span class="tag">Structural Analysis</span>
+      <span class="tag">Team Design</span>
+    </div>
+  </header>
+
+  <!-- ══ MEDIA VIEWER ══ -->
+  <!--
+    PHOTOS: img/p3a.jpg, img/p3b.jpg, img/p3c.jpg
+    3D MODEL: models/wheelchair-launcher.stl  (export from SolidWorks)
+  -->
+  <div class="case-viewer-wrap">
+    <div class="proj-media" data-model="models/wheelchair-launcher.stl">
+      <div class="media-tabs">
+        <button class="m-tab active" data-tab="images">Photos</button>
+        <button class="m-tab" data-tab="model">3D Model</button>
+      </div>
+      <span class="proj-category">Mechanical Design · SolidWorks</span>
+
+      <!-- Images panel -->
+      <div class="m-panel active" data-panel="images">
+        <div class="ss-track">
+          <div class="ss-slide active ph"><img src="img/p3a.jpg" alt="CAD render" onerror="this.style.display='none'" /></div>
+          <div class="ss-slide ph"><img src="img/p3b.jpg" alt="Prototype" onerror="this.style.display='none'" /></div>
+          <div class="ss-slide ph"><img src="img/p3c.jpg" alt="Assembly" onerror="this.style.display='none'" /></div>
+        </div>
+        <div class="ss-footer">
+          <button class="ss-arrow ss-prev">←</button>
+          <div class="ss-dots">
+            <button class="ss-dot active"></button>
+            <button class="ss-dot"></button>
+            <button class="ss-dot"></button>
+          </div>
+          <button class="ss-arrow ss-next">→</button>
+        </div>
+      </div>
+
+      <!-- 3D Model panel -->
+      <div class="m-panel" data-panel="model">
+        <div class="model-wrap">
+          <div class="model-loading"><div class="loader"></div><p>Loading model…</p></div>
+          <canvas class="model-canvas"></canvas>
+          <div class="model-footer">
+            <span class="model-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</span>
+            <div class="model-btns">
+              <button class="m-ctrl" data-action="autorotate">Auto-rotate: On</button>
+              <button class="m-ctrl" data-action="reset">Reset view</button>
+              <button class="m-ctrl" data-action="wire">Wireframe</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export hint -->
+  <div class="export-hint">
+    <p>
+      3D model file: <code>models/wheelchair-launcher.stl</code><br>
+      Export from SolidWorks → File → Save As → STL → Fine resolution. See instructions below.
+    </p>
+  </div>
+
+  <!-- ── CASE STUDY ── -->
+  <div class="case-body">
+    <div>
+      <h2 class="case-section-title">Overview</h2>
+      <div class="case-text">
+        <!-- EDIT: write in your own voice -->
+        <p>
+          The ENGINEER 1P13 capstone challenged our team to design an assistive device for a real
+          client — a wheelchair user with arthritis who wanted to play ball sports independently.
+          Our solution was a wheelchair-mounted launcher capable of throwing a ball
+          <strong>6+ metres</strong> with adjustable direction and force.
+        </p>
+        <p>
+          I led the mechanical CAD design, modelling the full assembly in <strong>SolidWorks</strong>
+          and using <strong>Granta EduPack</strong> to select mounting hardware materials that could
+          handle repeated launch loads without fatiguing the wheelchair frame.
+        </p>
+        <p>
+          The project required coordinating across sub-teams handling electronics, user interface,
+          and structural testing — the first time I managed technical design integration across a
+          full multidisciplinary group.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="case-section-title">Specifications</h2>
+      <!-- EDIT: update with real values from your design -->
+      <div class="spec-table">
+        <div class="spec-row">
+          <span class="spec-k">Launch Range</span>
+          <span class="spec-v">6 m+ (adjustable)</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Max Launch Load</span>
+          <span class="spec-v">~50 N</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Mounting System</span>
+          <span class="spec-v">Wheelchair rail clamp</span><!-- EDIT -->
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Frame Material</span>
+          <span class="spec-v">6061-T6 Aluminium</span><!-- EDIT: Granta recommendation -->
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">CAD Software</span>
+          <span class="spec-v">SolidWorks 2024</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Material Selection</span>
+          <span class="spec-v">Granta EduPack CES</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Team Size</span>
+          <span class="spec-v">4 engineers</span><!-- EDIT -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="case-body" style="padding-top:0; border-top:none;">
+    <div>
+      <h2 class="case-section-title">What I Learned</h2>
+      <div class="outcome-list">
+        <div class="outcome">
+          <span class="outcome-dot">◆</span>
+          <div class="outcome-text">
+            <strong>Material selection under load</strong>
+            Using Granta EduPack to cross-reference yield strength, density, and corrosion
+            resistance under real constraints — not just picking "aluminium" because it's familiar.
+          </div>
+        </div>
+        <div class="outcome">
+          <span class="outcome-dot">◆</span>
+          <div class="outcome-text">
+            <strong>Design for the actual user</strong>
+            Accessibility constraints forced decisions I wouldn't have made otherwise — tool-free
+            mounting, one-handed operation. Constraints produce better engineering.
+          </div>
+        </div>
+        <div class="outcome">
+          <span class="outcome-dot">◆</span>
+          <div class="outcome-text">
+            <strong>Integrating across sub-teams</strong>
+            Coordinating CAD with the electronics team's component footprints required discipline
+            around version control — first time I used SolidWorks in a shared-model context.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h2 class="case-section-title">Aerospace Connection</h2>
+      <div class="case-text">
+        <p>
+          Granta EduPack material selection is standard practice in aerospace structural design.
+          The same process I used here — defining a performance index, filtering by constraints,
+          and ranking candidates — is how engineers select materials for airframe brackets,
+          satellite bus panels, and launch vehicle skins.
+        </p>
+        <p>
+          The 50 N launch load analysis also introduced me to how fatigue and cyclic loading
+          are accounted for in design — a core concept in any aerospace structure that sees
+          repeated stress cycles in service.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOW TO ADD YOUR MODEL ── -->
+  <div class="instructions">
+    <h2 class="inst-title">How to add your SolidWorks model</h2>
+    <p class="inst-sub">The viewer supports .STL files. Export takes about 30 seconds.</p>
+    <div class="inst-steps">
+      <div class="inst-step">Open your SolidWorks assembly file</div>
+      <div class="inst-step">File → Save As → change file type to <code>STL (.stl)</code></div>
+      <div class="inst-step">Click Options → set resolution to <strong>Fine</strong> → OK → Save</div>
+      <div class="inst-step">In your GitHub repo, create a <code>models/</code> folder (upload a blank <code>.gitkeep</code> file to create it)</div>
+      <div class="inst-step">Upload your STL file named exactly <code>wheelchair-launcher.stl</code> inside the <code>models/</code> folder</div>
+      <div class="inst-step">Reload this page — the 3D Model tab will load it automatically</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Engineering Physics · McMaster University</p>
+  </footer>
+
+  <!-- MEDIA VIEWER JS -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader }     from 'three/addons/loaders/STLLoader.js';
+
+    const mediaEl   = document.querySelector('.proj-media');
+    const modelPath = mediaEl.dataset.model;
+    const tabs      = mediaEl.querySelectorAll('.m-tab');
+    const panels    = mediaEl.querySelectorAll('.m-panel');
+
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xB8C4CF, metalness: 0.55, roughness: 0.4 });
+    const wireMat  = new THREE.MeshBasicMaterial({ color: 0xFDBF57, wireframe: true });
+
+    let viewer = null, viewerBuilt = false;
+
+    function buildScene(canvas) {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.shadowMap.enabled = true;
+      renderer.setClearColor(0x18181E);
+
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.001, 2000);
+      camera.position.set(0, 2, 6);
+
+      // Rich lighting for the case study page
+      scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+      const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(4, 6, 4); key.castShadow = true; scene.add(key);
+      const fill = new THREE.DirectionalLight(0xaabbff, 0.6); fill.position.set(-4, 2, -4); scene.add(fill);
+      const rim  = new THREE.DirectionalLight(0xFDBF57, 0.4); rim.position.set(0, -3, -5); scene.add(rim);
+      const grid = new THREE.GridHelper(30, 40, 0x252528, 0x252528); scene.add(grid);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.06;
+      controls.autoRotate = true; controls.autoRotateSpeed = 0.8;
+      controls.minDistance = 0.5; controls.maxDistance = 500;
+
+      let mesh = null, myMat = solidMat.clone();
+      const initPos = camera.position.clone();
+      const loadingEl = canvas.closest('.model-wrap').querySelector('.model-loading');
+
+      new STLLoader().load(modelPath, (geo) => {
+        geo.computeVertexNormals(); geo.computeBoundingBox();
+        const c  = new THREE.Vector3(), sz = new THREE.Vector3();
+        geo.boundingBox.getCenter(c); geo.boundingBox.getSize(sz);
+        geo.translate(-c.x, -c.y, -c.z);
+        mesh = new THREE.Mesh(geo, myMat); mesh.castShadow = true; scene.add(mesh);
+        const maxD = Math.max(sz.x, sz.y, sz.z);
+        camera.position.set(maxD * 0.3, maxD * 0.6, maxD * 1.9);
+        controls.target.set(0, 0, 0); controls.update();
+        initPos.copy(camera.position);
+        grid.position.y = -sz.y * 0.5;
+        loadingEl.classList.add('hidden');
+      }, null, () => {
+        loadingEl.innerHTML = '<p style="color:#7A7A74;font-family:var(--mono);font-size:0.68rem;text-align:center;padding:1.5rem;letter-spacing:0.1em;line-height:1.8;">Model not found.<br>Upload <code>models/wheelchair-launcher.stl</code><br>to your repo and reload.</p>';
+      });
+
+      function resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      }
+      resize(); new ResizeObserver(resize).observe(canvas);
+
+      let visible = true;
+      (function loop() { requestAnimationFrame(loop); if (visible) { controls.update(); renderer.render(scene, camera); } })();
+
+      return {
+        reset()         { camera.position.copy(initPos); controls.target.set(0,0,0); controls.autoRotate = true; controls.update(); },
+        toggleWire()    { if (!mesh) return; const isW = mesh.material.wireframe; myMat = isW ? solidMat.clone() : wireMat; mesh.material = myMat; },
+        toggleAutoRot() { controls.autoRotate = !controls.autoRotate; return controls.autoRotate; },
+        setVisible(v)   { visible = v; if (v) resize(); }
+      };
+    }
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        mediaEl.querySelector(`[data-panel="${target}"]`).classList.add('active');
+        if (target === 'model' && !viewerBuilt) {
+          viewerBuilt = true;
+          viewer = buildScene(mediaEl.querySelector('.model-canvas'));
+        }
+        if (viewer) viewer.setVisible(target === 'model');
+      });
+    });
+
+    // Controls
+    mediaEl.querySelectorAll('.m-ctrl').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!viewer) return;
+        if (btn.dataset.action === 'reset')      viewer.reset();
+        if (btn.dataset.action === 'wire')        { viewer.toggleWire(); btn.classList.toggle('on'); }
+        if (btn.dataset.action === 'autorotate') {
+          const on = viewer.toggleAutoRot();
+          btn.textContent = `Auto-rotate: ${on ? 'On' : 'Off'}`;
+          btn.classList.toggle('on', !on);
+        }
+      });
+    });
+
+    // Slideshow
+    const slides = Array.from(mediaEl.querySelectorAll('.ss-slide'));
+    const dots   = Array.from(mediaEl.querySelectorAll('.ss-dot'));
+    let cur = 0;
+    function goSlide(n) {
+      slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('active'); dots[cur].classList.add('active');
+    }
+    mediaEl.querySelector('.ss-prev').addEventListener('click', () => goSlide(cur - 1));
+    mediaEl.querySelector('.ss-next').addEventListener('click', () => goSlide(cur + 1));
+    dots.forEach((d, i) => d.addEventListener('click', () => goSlide(i)));
+  </script>
+
+</body>
+</html>
