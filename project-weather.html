@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Station — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    .nav-pad { padding-top: var(--nav-h); }
+    .case-wrap { max-width: 1440px; margin: 0 auto; }
+    .case-header { padding: 4rem 4vw 3rem; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: end; }
+    .case-back { font-family: var(--sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem; transition: color 0.2s; }
+    .case-back::before { content: '←'; }
+    .case-back:hover { color: var(--gold); }
+    .case-domain { font-family: var(--sans); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--maroon-l); margin-bottom: 0.75rem; }
+    .case-title { font-family: var(--serif); font-weight: 700; font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1.5rem; }
+    .case-meta { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .meta-key { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .meta-val { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+    .case-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; align-self: end; }
+    .case-media { border-bottom: 1px solid var(--border); }
+    .case-media .proj-media { height: 60vh; min-height: 400px; }
+    .case-media .media-tabs { top: 1.25rem; left: 1.5rem; }
+    .case-media .m-tab { font-size: 0.68rem; padding: 0.42rem 1rem; }
+    .case-media .proj-category { top: 1.3rem; right: 1.5rem; }
+    .case-media .model-footer { padding: 0.75rem 1.5rem; }
+    .case-media .m-ctrl { font-size: 0.62rem; padding: 0.35rem 0.85rem; }
+    .export-hint { padding: 1.1rem 4vw; background: var(--bg2); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; color: var(--muted); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .export-hint code { padding: 0.2rem 0.55rem; background: var(--bg3); border: 1px solid var(--border2); color: var(--gold-d); }
+    .case-body { padding: 5rem 4vw; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; border-bottom: 1px solid var(--border); }
+    .case-section-title { font-family: var(--serif); font-weight: 700; font-size: 1.4rem; color: var(--text); margin-bottom: 1.25rem; }
+    .case-section-title::before { content: '// '; color: var(--maroon-l); font-family: var(--mono); font-size: 0.9rem; }
+    .case-text { font-size: 0.92rem; color: var(--muted2); line-height: 1.78; }
+    .case-text p + p { margin-top: 0.85rem; }
+    .case-text strong { color: var(--text); font-weight: 600; }
+    .spec-table { display: flex; flex-direction: column; border: 1px solid var(--border); }
+    .spec-row { display: grid; grid-template-columns: 1fr 1.3fr; border-bottom: 1px solid var(--border); padding: 0.8rem 1.1rem; gap: 1rem; }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-k { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .spec-v { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+    .outcome-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .outcome { display: flex; gap: 1rem; align-items: start; padding: 1.1rem; border: 1px solid var(--border); background: var(--bg2); }
+    .outcome-dot { color: var(--gold); flex-shrink: 0; margin-top: 0.15rem; }
+    .outcome-text { font-size: 0.88rem; color: var(--muted2); line-height: 1.65; }
+    .outcome-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 0.2rem; }
+    @media (max-width: 900px) { .case-header { grid-template-columns: 1fr; } .case-body { grid-template-columns: 1fr; gap: 3rem; } .case-media .proj-media { height: 50vh; } }
+    @media (max-width: 600px) { .case-header { padding: 3rem 5vw 2.5rem; } .case-body { padding: 3.5rem 5vw; } .export-hint { padding: 1rem 5vw; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="nav-pad"></div>
+
+  <div class="case-wrap">
+    <header class="case-header">
+      <div>
+        <a href="projects.html" class="case-back">All Projects</a>
+        <p class="case-domain">Embedded Systems · Hardware · 2024 – Present</p>
+        <h1 class="case-title">Portable Weather<br>Station Node</h1>
+        <div class="case-meta">
+          <div class="meta-item"><span class="meta-key">MCU</span><span class="meta-val">Arduino (ATmega328P)</span></div>
+          <div class="meta-item"><span class="meta-key">Languages</span><span class="meta-val">C / C++</span></div>
+          <div class="meta-item"><span class="meta-key">CAD</span><span class="meta-val">SolidWorks</span></div>
+          <div class="meta-item"><span class="meta-key">Status</span><span class="meta-val" style="color:var(--gold);">In progress</span></div>
+        </div>
+      </div>
+      <div class="case-tags">
+        <span class="tag">Arduino</span><span class="tag">C/C++</span><span class="tag">SolidWorks</span>
+        <span class="tag">I²C / SPI</span><span class="tag">Embedded</span><span class="tag">Data Logging</span>
+      </div>
+    </header>
+
+    <!-- MEDIA VIEWER — Photos + 3D Model -->
+    <!--
+      Photos: img/p2a.jpg, img/p2b.jpg, img/p2c.jpg
+      3D Model: models/weather-station.stl  (SolidWorks → File → Save As → STL)
+    -->
+    <div class="case-media">
+      <div class="proj-media" data-model="models/weather-station.stl">
+        <div class="media-tabs">
+          <button class="m-tab active" data-tab="images">Photos</button>
+          <button class="m-tab no-model" data-tab="model">3D Model</button>
+        </div>
+        <span class="proj-category">Embedded / SolidWorks</span>
+        <div class="m-panel active" data-panel="images">
+          <div class="ss-track">
+            <div class="ss-slide active ph"><img src="img/p2a.jpg" alt="" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p2b.jpg" alt="" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p2c.jpg" alt="" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="ss-footer">
+            <button class="ss-arrow ss-prev">←</button>
+            <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+            <button class="ss-arrow ss-next">→</button>
+          </div>
+        </div>
+        <div class="m-panel" data-panel="model">
+          <div class="model-wrap">
+            <div class="model-loading"><div class="loader"></div><p>Loading model…</p></div>
+            <canvas class="model-canvas"></canvas>
+            <div class="model-footer">
+              <span class="model-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</span>
+              <div class="model-btns">
+                <button class="m-ctrl" data-action="autorotate">Auto-rotate: On</button>
+                <button class="m-ctrl" data-action="reset">Reset</button>
+                <button class="m-ctrl" data-action="wire">Wireframe</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="export-hint">
+      <p>3D model: <code>models/weather-station.stl</code> · Export from SolidWorks → File → Save As → STL → Fine resolution</p>
+    </div>
+
+    <div class="case-body">
+      <div>
+        <h2 class="case-section-title">Overview</h2>
+        <div class="case-text">
+          <!-- EDIT: write in your own voice -->
+          <p>
+            This started as a straightforward sensor project and grew into a proper engineering problem once
+            I started thinking about the housing. Getting a sensor to read correctly inside a plastic box
+            exposed to rain, humidity, and temperature swings is harder than it sounds.
+          </p>
+          <p>
+            The system measures <strong>temperature, humidity, wind speed, and rainfall</strong> using a sensor
+            suite communicating over I²C and SPI. Data is logged to an SD card in real time, with a timestamp
+            from an RTC module.
+          </p>
+          <p>
+            The housing was designed in <strong>SolidWorks</strong> with deliberate attention to ventilation —
+            the temperature and humidity sensors need airflow, but the electronics need to stay dry.
+            I went through several housing iterations before the current design.
+          </p>
+        </div>
+      </div>
+      <div>
+        <h2 class="case-section-title">Specifications</h2>
+        <div class="spec-table">
+          <!-- EDIT: update with real values -->
+          <div class="spec-row"><span class="spec-k">MCU</span><span class="spec-v">Arduino Uno (ATmega328P)</span></div>
+          <div class="spec-row"><span class="spec-k">Sensors</span><span class="spec-v">DHT22, anemometer, rain gauge</span></div><!-- EDIT -->
+          <div class="spec-row"><span class="spec-k">Comms</span><span class="spec-v">I²C, SPI, digital pulse counting</span></div><!-- EDIT -->
+          <div class="spec-row"><span class="spec-k">Data logging</span><span class="spec-v">SD card + RTC timestamp</span></div><!-- EDIT -->
+          <div class="spec-row"><span class="spec-k">Sample rate</span><span class="spec-v">5 s interval</span></div><!-- EDIT -->
+          <div class="spec-row"><span class="spec-k">Housing</span><span class="spec-v">SolidWorks, 3D printed prototype</span></div><!-- EDIT -->
+          <div class="spec-row"><span class="spec-k">Power</span><span class="spec-v">5V USB / 9V battery</span></div><!-- EDIT -->
+        </div>
+      </div>
+    </div>
+
+    <div class="case-body" style="padding-top:0; border-top:none;">
+      <div>
+        <h2 class="case-section-title">Housing Design Process</h2>
+        <div class="case-text">
+          <!-- EDIT: your actual process -->
+          <p>
+            The first housing prototype failed immediately — moisture got into the sensor cavity and the
+            DHT22 readings drifted by 15% within an hour. The fix was adding a labyrinthine ventilation
+            channel that lets air circulate without letting water in.
+          </p>
+          <p>
+            The second challenge was thermal management. The Arduino generates heat, and if that heat
+            is trapped near the temperature sensor, you get a systematic reading error. I added a
+            thermal baffle separating the microcontroller cavity from the sensor cavity.
+          </p>
+        </div>
+      </div>
+      <div>
+        <h2 class="case-section-title">What I Learned</h2>
+        <div class="outcome-list">
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Sensor enclosure design</strong>Ventilation and thermal isolation are not afterthoughts — they determine whether your sensor reads the environment or the inside of your box.</div>
+          </div>
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Embedded C/C++ discipline</strong>Memory is tight on ATmega328P. Writing lean, interrupt-driven code for sensor polling forced me to think carefully about data types and timing.</div>
+          </div>
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Iterative physical design</strong>CAD models and 3D prints revealed fit issues that were invisible on screen. The housing went through three major revisions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer><p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p></footer>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader }     from 'three/addons/loaders/STLLoader.js';
+
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xB8C4CF, metalness: 0.55, roughness: 0.4 });
+    const wireMat  = new THREE.MeshBasicMaterial({ color: 0xFDBF57, wireframe: true });
+    const mediaEl  = document.querySelector('.proj-media');
+    const modelPath = mediaEl.dataset.model;
+    const tabs = mediaEl.querySelectorAll('.m-tab');
+    const panels = mediaEl.querySelectorAll('.m-panel');
+
+    if (modelPath) mediaEl.querySelector('.m-tab[data-tab="model"]').classList.remove('no-model');
+
+    let viewer = null, built = false;
+
+    function buildScene(canvas) {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setClearColor(0x18181E);
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.001, 2000);
+      camera.position.set(0, 2, 6);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+      const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(4, 6, 4); key.castShadow = true; scene.add(key);
+      const fill = new THREE.DirectionalLight(0xaabbff, 0.5); fill.position.set(-4, 2, -4); scene.add(fill);
+      const rim  = new THREE.DirectionalLight(0xFDBF57, 0.4); rim.position.set(0, -3, -5); scene.add(rim);
+      scene.add(new THREE.GridHelper(30, 40, 0x252528, 0x252528));
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.06;
+      controls.autoRotate = true; controls.autoRotateSpeed = 0.8;
+      let myMat = solidMat.clone(), mesh = null;
+      const initPos = camera.position.clone();
+      const loadEl  = canvas.closest('.model-wrap').querySelector('.model-loading');
+      new STLLoader().load(modelPath, (geo) => {
+        geo.computeVertexNormals(); geo.computeBoundingBox();
+        const c = new THREE.Vector3(), sz = new THREE.Vector3();
+        geo.boundingBox.getCenter(c); geo.boundingBox.getSize(sz);
+        geo.translate(-c.x, -c.y, -c.z);
+        mesh = new THREE.Mesh(geo, myMat); scene.add(mesh);
+        const maxD = Math.max(sz.x, sz.y, sz.z);
+        camera.position.set(maxD * 0.3, maxD * 0.6, maxD * 1.9);
+        controls.target.set(0, 0, 0); controls.update(); initPos.copy(camera.position);
+        loadEl.classList.add('hidden');
+      }, null, () => {
+        loadEl.innerHTML = '<p style="color:#7A7A74;font-family:var(--mono);font-size:0.65rem;text-align:center;padding:2rem;letter-spacing:0.1em;line-height:1.8;">Model not found.<br>Upload <code>models/weather-station.stl</code></p>';
+      });
+      function resize() { const w = canvas.clientWidth, h = canvas.clientHeight; if (!w||!h) return; renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+      resize(); new ResizeObserver(resize).observe(canvas);
+      let visible = true;
+      (function loop() { requestAnimationFrame(loop); if (visible) { controls.update(); renderer.render(scene, camera); } })();
+      return {
+        reset()         { camera.position.copy(initPos); controls.target.set(0,0,0); controls.update(); },
+        toggleWire()    { if (!mesh) return; myMat = myMat.wireframe ? solidMat.clone() : wireMat; mesh.material = myMat; },
+        toggleAutoRot() { controls.autoRotate = !controls.autoRotate; return controls.autoRotate; },
+        setVisible(v)   { visible = v; if (v) resize(); }
+      };
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active')); panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        mediaEl.querySelector(`[data-panel="${target}"]`).classList.add('active');
+        if (target === 'model' && !built) { built = true; viewer = buildScene(mediaEl.querySelector('.model-canvas')); }
+        if (viewer) viewer.setVisible(target === 'model');
+      });
+    });
+
+    mediaEl.querySelectorAll('.m-ctrl').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!viewer) return;
+        if (btn.dataset.action === 'reset')      viewer.reset();
+        if (btn.dataset.action === 'wire')        { viewer.toggleWire(); btn.classList.toggle('on'); }
+        if (btn.dataset.action === 'autorotate') { const on = viewer.toggleAutoRot(); btn.textContent = `Auto-rotate: ${on?'On':'Off'}`; btn.classList.toggle('on', !on); }
+      });
+    });
+
+    // Slideshow
+    const slides = Array.from(mediaEl.querySelectorAll('.ss-slide'));
+    const dots   = Array.from(mediaEl.querySelectorAll('.ss-dot'));
+    let cur = 0;
+    function goSlide(n) { slides[cur].classList.remove('active'); dots[cur].classList.remove('active'); cur=(n+slides.length)%slides.length; slides[cur].classList.add('active'); dots[cur].classList.add('active'); }
+    mediaEl.querySelector('.ss-prev').addEventListener('click', () => goSlide(cur-1));
+    mediaEl.querySelector('.ss-next').addEventListener('click', () => goSlide(cur+1));
+    dots.forEach((d,i) => d.addEventListener('click', () => goSlide(i)));
+  </script>
+</body>
+</html>
