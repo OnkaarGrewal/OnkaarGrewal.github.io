@@ -385,7 +385,7 @@
 
     // ── Load GLB ──
     const loader = new GLTFLoader();
-    loader.load('models/weather-station.glb', (gltf) => {
+    loader.load('./weather-station.glb', (gltf) => {
         weatherModel = gltf.scene;
         weatherModel.traverse(child => {
           if (!child.isMesh) return;
