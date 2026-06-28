@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+      padding: 8rem 3rem 3.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title {
+      font-family: var(--serif); font-weight: 700;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--text);
+    }
+    .page-title em { font-style: italic; color: var(--maroon-l); }
+    .page-intro { font-size: 0.95rem; color: var(--muted2); line-height: 1.75; }
+
+    /* ── FILTER BAR ── */
+    .filter-wrap {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+    }
+    .filter-bar {
+      padding: 1.25rem 3rem; display: flex; gap: 0.4rem; flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: var(--nav-h); z-index: 100;
+      background: rgba(10,10,12,0.96); backdrop-filter: blur(12px);
+    }
+    .f-btn {
+      font-family: var(--sans); font-weight: 600; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.42rem 1rem;
+      background: transparent; border: 1px solid var(--border2); color: var(--muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .f-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .f-btn.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+
+    /* ── PROJECT GRID — identical to index.html ── */
+    .proj-wrap {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+    }
+    .feat-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .feat-card {
+      background: var(--bg2); display: flex; flex-direction: column;
+      overflow: hidden; transition: background 0.2s;
+    }
+    .feat-card:hover { background: var(--bg3); }
+    .feat-card[data-hidden="true"] { display: none; }
+
+    /* Media viewer — identical to index */
+    .feat-body { padding: 1.85rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+    .feat-num { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em; color: var(--maroon-l); }
+    .feat-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; line-height: 1.2; color: var(--text); }
+    .feat-desc { font-size: 0.86rem; color: var(--muted2); line-height: 1.65; }
+    .feat-insight {
+      border-left: 2px solid var(--gold); padding: 0.45rem 0.85rem;
+      font-family: var(--sans); font-weight: 600; font-size: 0.81rem;
+      color: var(--gold); line-height: 1.5; background: rgba(253,191,87,0.05);
+    }
+    .feat-foot {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: auto; padding-top: 0.85rem; border-top: 1px solid var(--border);
+    }
+    .feat-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .feat-year { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* Status badge */
+    .feat-status {
+      font-family: var(--mono); font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid;
+    }
+    .s-done    { border-color: #1a4a1a; color: #4ADE80; }
+    .s-going   { border-color: #4a2800; color: var(--gold); }
+    .s-planned { border-color: var(--border2); color: var(--muted); }
+
+    /* Case study link badge */
+    .badge-case {
+      font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.18rem 0.6rem;
+      border: 1px solid var(--gold); color: var(--gold);
+      background: rgba(253,191,87,0.07);
+      text-decoration: none; transition: background 0.2s; display: inline-block;
+    }
+    .badge-case:hover { background: rgba(253,191,87,0.18); }
+
+    /* Empty state */
+    .empty-state {
+      display: none; padding: 5rem 3rem; text-align: center;
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .page-header { grid-template-columns: 1fr; gap: 2rem; padding-top: 7rem; }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .page-header { padding: 6rem 1.5rem 3rem; }
+      .filter-bar { padding: 1rem 1.5rem; }
+      .feat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV — identical to index.html -->
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+    <div class="nav-sections">
+      <a href="index.html#about">About</a>
+      <a href="index.html#education">Education</a>
+      <a href="index.html#skills">Skills</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <h1 class="page-title">All<br><em>Projects.</em></h1>
+    <p class="page-intro">
+      A complete record of things I've designed, built, simulated, and iterated on —
+      spanning embedded hardware, mechanical CAD, and control systems software.
+      Every project ties back to an aerospace engineering goal.
+    </p>
+  </header>
+
+  <!-- FILTER BAR -->
+  <div class="filter-wrap">
+    <div class="filter-bar">
+      <button class="f-btn active" data-filter="all">All</button>
+      <button class="f-btn" data-filter="software">Software</button>
+      <button class="f-btn" data-filter="hardware">Hardware</button>
+      <button class="f-btn" data-filter="mechanical">Mechanical</button>
+      <button class="f-btn" data-filter="team">Team</button>
+    </div>
+  </div>
+
+  <!-- PROJECT GRID -->
+  <!--
+    TO ADD A PROJECT: Copy a .feat-card block, set data-category on it
+    (space-separated: software hardware mechanical team),
+    set data-model on .proj-media if you have a 3D model,
+    add no-model class to the 3D tab button if there is NO model.
+  -->
+  <div class="proj-wrap">
+    <div class="feat-grid" id="feat-grid">
+
+      <!-- ── 01: PID SIMULATION ── -->
+      <article class="feat-card" data-category="software">
+        <!--
+          img/p1a.jpg — Matplotlib step response output
+          img/p1b.jpg — phase diagram or parameter comparison
+          img/p1c.jpg — code screenshot or animation frame
+          No 3D model for this project.
+        -->
+        <div class="proj-media">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Software / Control Theory</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p1a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p1b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p1c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-body">
+          <span class="feat-num">01 — Software</span>
+          <h3 class="feat-title">PID Controller Simulation Suite</h3>
+          <p class="feat-desc">Modelled a second-order dynamic system with a full PID controller in Python, implementing proportional, integral, and derivative tuning to analyse transient response. Real-time Matplotlib visualisation compares system behaviour across varying gain parameters — foundation for spacecraft attitude control models.</p>
+          <p class="feat-insight">Same PID loop architecture stabilises satellite orientation, rocket TVC, and re-entry guidance systems.</p>
+          <div class="feat-foot">
+            <div class="feat-tags">
+              <span class="tag">Python</span>
+              <span class="tag">NumPy</span>
+              <span class="tag">Matplotlib</span>
+              <span class="tag">Control Theory</span>
+            </div>
+            <span class="feat-status s-going">In progress</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── 02: WEATHER STATION ── -->
+      <article class="feat-card" data-category="hardware software">
+        <!--
+          img/p2a.jpg — hardware / sensor array setup
+          img/p2b.jpg — SolidWorks housing render
+          img/p2c.jpg — assembled device or data output
+          models/weather-station.stl — SolidWorks export
+        -->
+        <div class="proj-media" data-model="models/weather-station.stl">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Embedded / Hardware</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p2a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p2b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p2c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-body">
+          <span class="feat-num">02 — Hardware</span>
+          <h3 class="feat-title">Portable Weather Station Node</h3>
+          <p class="feat-desc">Autonomous weather monitoring system with a sensor suite measuring humidity, temperature, wind speed, and rainfall with real-time data logging. Sensor protocols implemented in C/C++ on an Arduino-based embedded system. Mechanical housing designed in SolidWorks to protect electronics from environmental exposure.</p>
+          <p class="feat-insight">Designing enclosures that keep sensors accurate under environmental stress — same challenge as aerospace instrument bay design.</p>
+          <div class="feat-foot">
+            <div class="feat-tags">
+              <span class="tag">Arduino</span>
+              <span class="tag">C/C++</span>
+              <span class="tag">SolidWorks</span>
+            </div>
+            <span class="feat-status s-going">In progress</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── 03: WHEELCHAIR LAUNCHER ── -->
+      <article class="feat-card" data-category="mechanical team">
+        <!--
+          img/p3a.jpg — CAD render or SolidWorks screenshot
+          img/p3b.jpg — prototype photo
+          img/p3c.jpg — assembly detail or team photo
+          models/wheelchair-launcher.stl — SolidWorks export
+        -->
+        <div class="proj-media" data-model="models/wheelchair-launcher.stl">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Mechanical / 1P13</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p3a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p3b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p3c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-body">
+          <span class="feat-num">03 — Mechanical</span>
+          <h3 class="feat-title">Wheelchair-Mounted Assistive Launcher</h3>
+          <p class="feat-desc">Led CAD design of a wheelchair-mounted ball launcher achieving 6 m+ range for a client with arthritis. Full SolidWorks assembly with Granta EduPack material selection. Coordinated design integration across a multidisciplinary team in ENGINEER 1P13. Validated for 50 N+ repeated launch loads.</p>
+          <p class="feat-insight">Granta-validated material selection under cyclic load — the same methodology used in aerospace structural component design.</p>
+          <div class="feat-foot">
+            <div>
+              <div class="feat-tags" style="margin-bottom:0.5rem;">
+                <span class="tag">SolidWorks</span>
+                <span class="tag">Granta EduPack</span>
+                <span class="tag">1P13</span>
+              </div>
+              <a href="project-wheelchair.html" class="badge-case">◈ Full case study + 3D model</a>
+            </div>
+            <span class="feat-status s-done">Complete</span>
+          </div>
+        </div>
+      </article>
+
+      <!--
+        ══ ADD MORE PROJECTS HERE ══
+        Copy the block above, change data-category, content, images, and model path.
+        If no 3D model, keep `no-model` class on the 3D tab button.
+        If there IS a model, set data-model="models/filename.stl" on .proj-media
+        and the tab will appear automatically.
+      -->
+
+    </div>
+    <p class="empty-state" id="empty-state">No projects in this category yet.</p>
+  </div>
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Engineering Physics · McMaster University</p>
+  </footer>
+
+  <!-- FILTER JS -->
+  <script>
+    const cards  = document.querySelectorAll('.feat-card');
+    const btns   = document.querySelectorAll('.f-btn');
+    const empty  = document.getElementById('empty-state');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.filter;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        let n = 0;
+        cards.forEach(card => {
+          const cats = (card.dataset.category || '').split(' ');
+          const show = cat === 'all' || cats.includes(cat);
+          card.dataset.hidden = show ? 'false' : 'true';
+          if (show) n++;
+        });
+        empty.style.display = n === 0 ? 'block' : 'none';
+      });
+    });
+  </script>
+
+  <!-- MEDIA VIEWER JS -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader }     from 'three/addons/loaders/STLLoader.js';
+
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xB8C4CF, metalness: 0.55, roughness: 0.4 });
+    const wireMat  = new THREE.MeshBasicMaterial({ color: 0xFDBF57, wireframe: true });
+
+    function buildScene(canvas, modelPath) {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setClearColor(0x18181E);
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.001, 2000);
+      camera.position.set(0, 1, 4);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(3, 5, 3); scene.add(key);
+      const fill = new THREE.DirectionalLight(0xaabbff, 0.5); fill.position.set(-3, 2, -3); scene.add(fill);
+      const rim  = new THREE.DirectionalLight(0xFDBF57, 0.3); rim.position.set(0, -2, -4); scene.add(rim);
+      scene.add(new THREE.GridHelper(20, 30, 0x252528, 0x252528));
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.07;
+      controls.autoRotate = true; controls.autoRotateSpeed = 1.2;
+      let myMat = solidMat.clone(), mesh = null;
+      const initPos = camera.position.clone();
+      const loadEl  = canvas.closest('.model-wrap').querySelector('.model-loading');
+      new STLLoader().load(modelPath, (geo) => {
+        geo.computeVertexNormals(); geo.computeBoundingBox();
+        const c = new THREE.Vector3(), sz = new THREE.Vector3();
+        geo.boundingBox.getCenter(c); geo.boundingBox.getSize(sz);
+        geo.translate(-c.x, -c.y, -c.z);
+        mesh = new THREE.Mesh(geo, myMat); mesh.castShadow = true; scene.add(mesh);
+        const maxD = Math.max(sz.x, sz.y, sz.z);
+        camera.position.set(0, maxD * 0.4, maxD * 1.7);
+        controls.target.set(0, 0, 0); controls.update(); initPos.copy(camera.position);
+        loadEl.classList.add('hidden');
+      }, null, () => {
+        loadEl.innerHTML = '<p style="color:#7A7A74;font-family:var(--mono);font-size:0.6rem;text-align:center;padding:1rem;letter-spacing:0.1em;line-height:1.8;">Model not found.<br>Add to models/ folder.</p>';
+      });
+      function resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      }
+      resize(); new ResizeObserver(resize).observe(canvas);
+      let visible = true;
+      (function loop() { requestAnimationFrame(loop); if (visible) { controls.update(); renderer.render(scene, camera); } })();
+      return {
+        reset()       { camera.position.copy(initPos); controls.target.set(0,0,0); controls.update(); },
+        toggleWire()  { if (!mesh) return; myMat = myMat.wireframe ? solidMat.clone() : wireMat; mesh.material = myMat; },
+        setVisible(v) { visible = v; if (v) resize(); }
+      };
+    }
+
+    document.querySelectorAll('.feat-card').forEach(card => {
+      const mediaEl = card.querySelector('.proj-media');
+      if (!mediaEl) return;
+      const modelPath = mediaEl.dataset.model;
+      const tabs      = mediaEl.querySelectorAll('.m-tab');
+      const panels    = mediaEl.querySelectorAll('.m-panel');
+
+      // Show 3D tab if this card has a model
+      if (modelPath) {
+        mediaEl.querySelector('.m-tab[data-tab="model"]').classList.remove('no-model');
+      }
+
+      let viewer = null, built = false;
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.tab;
+          mediaEl.querySelector(`[data-panel="${target}"]`).classList.add('active');
+          if (target === 'model' && !built && modelPath) {
+            built = true;
+            viewer = buildScene(mediaEl.querySelector('.model-canvas'), modelPath);
+          }
+          if (viewer) viewer.setVisible(target === 'model');
+        });
+      });
+
+      // 3D controls
+      mediaEl.querySelectorAll('.m-ctrl').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!viewer) return;
+          if (btn.dataset.action === 'reset') viewer.reset();
+          if (btn.dataset.action === 'wire')  { viewer.toggleWire(); btn.classList.toggle('on'); }
+        });
+      });
+
+      // Slideshow
+      const slides = Array.from(mediaEl.querySelectorAll('.ss-slide'));
+      const dots   = Array.from(mediaEl.querySelectorAll('.ss-dot'));
+      let cur = 0;
+      function goSlide(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+      }
+      mediaEl.querySelector('.ss-prev')?.addEventListener('click', () => goSlide(cur - 1));
+      mediaEl.querySelector('.ss-next')?.addEventListener('click', () => goSlide(cur + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => goSlide(i)));
+    });
+  </script>
+
+</body>
+</html>
