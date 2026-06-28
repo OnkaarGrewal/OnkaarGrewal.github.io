@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Station — Onkaar Grewal</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #18181E; }
+    #model-canvas { width: 100vw; height: 100vh; display: block; }
+    #status { position: absolute; top: 10px; left: 10px; color: #FDBF57; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="status">Loading...</div>
+  <canvas id="model-canvas"></canvas>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+    const canvas = document.getElementById('model-canvas');
+    const status = document.getElementById('status');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x18181E);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 2));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3);
+    dirLight.position.set(10, 10, 10);
+    scene.add(dirLight);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    const loader = new GLTFLoader();
+
+    // LOOK: No "models/" in this path!
+    loader.load('./weather-station.glb', (gltf) => {
+        scene.add(gltf.scene);
+        status.style.display = 'none';
+    }, undefined, (error) => {
+        status.innerText = "Error: " + error.message;
+        console.error("Path error detected:", error);
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
