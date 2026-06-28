@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onkaar Grewal — Materials Engineering</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Three.js for inline 3D viewers -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    /* ── HERO ── */
+    section#hero {
+      max-width: none; padding: 0; margin: 0;
+      border: none; scroll-margin-top: 0;
+    }
+    .hero-inner {
+      display: grid; grid-template-columns: 1fr 48%;
+      min-height: 100vh; align-items: stretch;
+    }
+    .hero-text {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 9rem 3.5rem 5rem 5%;
+    }
+    .hero-eyebrow {
+      font-family: var(--sans); font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.18em; color: var(--gold); margin-bottom: 1.5rem; text-transform: uppercase;
+    }
+    .hero-name {
+      font-family: var(--serif); font-size: clamp(3.5rem, 7vw, 6rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.25rem;
+    }
+    .hero-name span { display: block; color: var(--muted); font-weight: 400; }
+    .hero-tagline { font-size: 1.05rem; color: var(--muted2); max-width: 400px; margin-bottom: 2.75rem; line-height: 1.7; }
+    .hero-cta { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+    .hero-scroll {
+      margin-top: 4rem; font-family: var(--sans); font-size: 0.66rem;
+      letter-spacing: 0.18em; color: var(--border2); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .hero-scroll::before { content: ''; display: block; width: 1px; height: 44px; background: var(--border2); }
+
+    /* Hero photo panel */
+    .hero-photo-wrap {
+      position: relative; height: 100%; min-height: 100vh;
+      overflow: hidden;
+    }
+    .hero-photo-wrap::before {
+      content: ''; position: absolute; inset: -2px; z-index: 1;
+      border-left: 3px solid var(--maroon-d);
+      pointer-events: none;
+    }
+    .hero-photo-frame {
+      position: absolute; inset: 0;
+      clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%, 0 20px);
+      background: var(--bg3);
+      background-image:
+        repeating-linear-gradient(0deg,  transparent, transparent 30px, rgba(122,0,60,0.07) 30px, rgba(122,0,60,0.07) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(122,0,60,0.07) 30px, rgba(122,0,60,0.07) 31px);
+      overflow: hidden;
+    }
+    .hero-slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 0.9s ease;
+    }
+    .hero-slide.active { opacity: 1; }
+    /* EDIT: add img/hero-1.jpg through hero-5.jpg */
+    .hero-slide:nth-child(1) { background-image: url('img/hero-1.jpg'); }
+    .hero-slide:nth-child(2) { background-image: url('img/hero-2.jpg'); }
+    .hero-slide:nth-child(3) { background-image: url('img/hero-3.jpg'); }
+    .hero-slide:nth-child(4) { background-image: url('img/hero-4.jpg'); }
+    .hero-slide:nth-child(5) { background-image: url('img/hero-5.jpg'); }
+    .hero-indicators {
+      position: absolute; bottom: 1.5rem; left: 1.75rem; z-index: 10;
+      display: flex; gap: 5px; align-items: center;
+      padding: 0.5rem 0.85rem; background: rgba(10,10,12,0.5); backdrop-filter: blur(8px);
+    }
+    .h-ind {
+      /* Padding trick: 28px total height, 4px visible bar */
+      box-sizing: border-box;
+      height: 28px; padding: 12px 0;
+      width: 28px;
+      background: rgba(255,255,255,0.2);
+      background-clip: content-box;
+      cursor: pointer; border: none;
+      transition: background 0.3s, width 0.3s;
+    }
+    .h-ind.active { width: 48px; background: var(--gold); background-clip: content-box; }
+    .h-ind:hover:not(.active) { background: rgba(255,255,255,0.4); background-clip: content-box; }
+    .hero-count {
+      position: absolute; bottom: 1.95rem; right: 1.75rem; z-index: 10;
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4); background: rgba(10,10,12,0.5);
+      backdrop-filter: blur(8px); padding: 0.4rem 0.65rem;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 400px;
+      gap: 4.5rem; align-items: start; margin-top: 2rem;
+    }
+    .about-text p { color: var(--muted2); margin-bottom: 1rem; font-size: 0.97rem; line-height: 1.78; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); font-weight: 600; }
+
+    /* 3-image collage */
+    .about-collage {
+      display: grid; grid-template-columns: 1fr 1fr;
+      grid-template-rows: 210px 165px; gap: 0.55rem;
+    }
+    .collage-cell {
+      background: var(--bg3);
+      background-image:
+        repeating-linear-gradient(0deg,  transparent, transparent 30px, rgba(122,0,60,0.07) 30px, rgba(122,0,60,0.07) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(122,0,60,0.07) 30px, rgba(122,0,60,0.07) 31px);
+      overflow: hidden; position: relative;
+    }
+    .collage-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .collage-cell:first-child { grid-row: span 2; }
+
+    /* Horizontal info strip */
+    .about-info-strip { display: flex; margin-top: 3rem; border: 1px solid var(--border); }
+    .aii {
+      flex: 1; padding: 1rem 1.1rem; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .aii:last-child { border-right: none; }
+    .aii-k { font-family: var(--mono); font-size: 0.58rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--maroon-l); }
+    .aii-v { font-size: 0.88rem; color: var(--text); }
+
+    /* ── EDUCATION ── */
+    .edu-block { margin-top: 2.5rem; border-left: 2px solid var(--maroon); padding-left: 2rem; }
+    .edu-school { font-family: var(--sans); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+    .edu-degree { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .edu-period { font-size: 0.88rem; color: var(--muted); }
+    .edu-courses { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    /* ── SKILLS ── */
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 2.5rem; background: var(--border); }
+    .skill-card { padding: 2rem; background: var(--bg2); transition: background 0.2s; }
+    .skill-card:hover { background: var(--bg3); }
+    .skill-card-title { font-family: var(--sans); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .skill-list li { font-size: 0.88rem; color: var(--muted2); padding-left: 1.1rem; position: relative; line-height: 1.5; }
+    .skill-list li::before { content: '—'; position: absolute; left: 0; color: var(--maroon-l); }
+
+    /* ── FEATURED PROJECTS ── */
+    .projects-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; }
+    .proj-all-link { font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+    .proj-all-link::after { content: ' ↗'; }
+    .proj-all-link:hover { color: var(--gold); }
+
+    /* 3-card layout — equal columns */
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+    .feat-card {
+      background: var(--bg2); display: flex; flex-direction: column;
+      overflow: hidden; transition: background 0.2s;
+    }
+    .feat-card:hover { background: var(--bg3); }
+
+    .feat-body { padding: 1.85rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+    .feat-num { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em; color: var(--maroon-l); }
+    .feat-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; line-height: 1.2; color: var(--text); }
+    .feat-desc { font-size: 0.86rem; color: var(--muted2); line-height: 1.65; }
+    .feat-insight {
+      border-left: 2px solid var(--gold); padding: 0.45rem 0.85rem;
+      font-family: var(--sans); font-weight: 600; font-size: 0.81rem;
+      color: var(--gold); line-height: 1.5; background: rgba(253,191,87,0.05);
+    }
+    .feat-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+    .feat-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .feat-year { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted); }
+    .proj-footer { margin-top: 2rem; display: flex; justify-content: center; }
+
+    /* ── CONTACT ── */
+    .contact-top {
+      font-family: var(--serif); font-size: clamp(1.75rem, 3.5vw, 2.6rem);
+      font-weight: 400; max-width: 560px; line-height: 1.3; margin: 1.75rem 0 1.25rem;
+      color: var(--text);
+    }
+    .contact-sub { font-size: 0.95rem; color: var(--muted2); max-width: 480px; line-height: 1.7; margin-bottom: 2.5rem; }
+    .contact-links { display: flex; flex-direction: column; }
+    .contact-item {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+      transition: padding-left 0.2s;
+    }
+    .contact-item:first-child { border-top: 1px solid var(--border); }
+    .contact-item:hover { padding-left: 0.5rem; }
+    .contact-plat { font-family: var(--sans); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .contact-val { font-size: 0.9rem; color: var(--text); transition: color 0.2s; }
+    .contact-item:hover .contact-val { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1000px) {
+      .hero-inner { grid-template-columns: 1fr; min-height: auto; }
+      .hero-text { padding: 9rem 2rem 3rem; }
+      .hero-photo-wrap { min-height: 55vw; max-height: 480px; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .about-collage { grid-template-columns: 1fr 1fr; grid-template-rows: 180px 180px; }
+      .collage-cell:first-child { grid-row: auto; }
+      .about-info-strip { flex-wrap: wrap; }
+      .aii { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+    <div class="nav-sections">
+      <a href="#about">About</a>
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="hero-eyebrow fu">Available for co-ops &amp; internships — 2025</p><!-- EDIT -->
+        <h1 class="hero-name fu fu1">Onkaar<span>Grewal</span></h1>
+        <p class="hero-tagline fu fu2">
+          Materials Engineering undergraduate at McMaster University,
+          headed into aerospace engineering.<!-- EDIT: your focus -->
+        </p>
+        <div class="hero-cta fu fu3">
+          <a href="projects.html" class="btn btn-primary">View projects</a>
+          <a href="resume.html" class="btn btn-outline">Résumé ↗</a>
+          <a href="#contact" class="btn btn-outline">Get in touch</a>
+        </div>
+        <p class="hero-scroll fu fu4">Scroll to explore</p>
+      </div>
+
+      <!--
+        HERO PHOTOS: add img/hero-1.jpg through img/hero-5.jpg
+        Landscape photos work best. Click the indicators to switch.
+      -->
+      <div class="hero-photo-wrap fu fu2">
+        <div class="hero-photo-frame">
+          <div class="hero-slide active"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+          <div class="hero-slide"></div>
+        </div>
+        <div class="hero-indicators" id="hero-inds">
+          <button class="h-ind active"></button>
+          <button class="h-ind"></button>
+          <button class="h-ind"></button>
+          <button class="h-ind"></button>
+          <button class="h-ind"></button>
+        </div>
+        <span class="hero-count" id="hero-count">1 / 5</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ ABOUT ══ -->
+  <section id="about">
+    <p class="section-label">About</p>
+    <div class="about-grid">
+      <div class="about-text">
+        <!-- EDIT: write in your own voice -->
+        <p>I'm a second-year Materials Engineering student at McMaster University with a foundation in
+        classical mechanics, electrodynamics, and mathematical modelling. I'm drawn to problems where
+        the physics is hard and the stakes are real — which is why aerospace is the direction I'm heading.</p>
+        <p>Outside of coursework I climb, play volleyball, and shoot photography — hobbies that have
+        taught me more about <strong>precision and patience</strong> than any lecture hall.</p>
+        <p>I'm actively looking for co-op and research positions where I can contribute to real
+        engineering work and learn fast. <a href="about.html" style="color:var(--gold)">More about me →</a></p>
+      </div>
+
+      <!--
+        COLLAGE PHOTOS:
+        img/about-1.jpg — main tall left image (iron ring, lab, portrait)
+        img/about-2.jpg — top right
+        img/about-3.jpg — bottom right
+      -->
+      <div class="about-collage">
+        <div class="collage-cell"><img src="img/about-1.jpg" alt="" onerror="this.style.display='none'" /></div>
+        <div class="collage-cell"><img src="img/about-2.jpg" alt="" onerror="this.style.display='none'" /></div>
+        <div class="collage-cell"><img src="img/about-3.jpg" alt="" onerror="this.style.display='none'" /></div>
+      </div>
+    </div>
+
+    <div class="about-info-strip">
+      <!-- EDIT -->
+      <div class="aii"><span class="aii-k">Location</span><span class="aii-v">Hamilton, ON</span></div>
+      <div class="aii"><span class="aii-k">Degree</span><span class="aii-v">B.Eng. Materials Engineering</span></div>
+      <div class="aii"><span class="aii-k">University</span><span class="aii-v">McMaster</span></div>
+      <div class="aii"><span class="aii-k">Grad</span><span class="aii-v">2028</span></div>
+      <div class="aii"><span class="aii-k">Track</span><span class="aii-v">Aerospace Eng.</span></div>
+    </div>
+  </section>
+
+
+  <!-- ══ EDUCATION ══ -->
+  <section id="education">
+    <p class="section-label">Education</p>
+    <div class="edu-block">
+      <p class="edu-school">McMaster University — Hamilton, ON</p>
+      <h2 class="edu-degree">B.Eng. Materials Engineering</h2>
+      <p class="edu-period">September 2025 – April 2028</p><!-- EDIT -->
+      <div class="edu-courses">
+        <!-- EDIT: your actual courses -->
+        <span class="pill">Classical Mechanics</span>
+        <span class="pill">Electrodynamics</span>
+        <span class="pill">Linear Algebra</span>
+        <span class="pill">Multivariable Calculus</span>
+        <span class="pill">Thermodynamics</span>
+        <span class="pill">Engineering Design (1P13)</span>
+        <span class="pill">Intro to Programming</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SKILLS ══ -->
+  <section id="skills">
+    <p class="section-label">Skills</p>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <p class="skill-card-title">Computing &amp; Simulation</p>
+        <ul class="skill-list">
+          <li>Python — NumPy, SciPy, Matplotlib</li>
+          <li>MATLAB / Simulink</li>
+          <li>C / C++</li>
+          <li>LaTeX &amp; Git</li>
+          <li>Numerical Methods / ODE</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <p class="skill-card-title">Aerospace &amp; Physics</p>
+        <ul class="skill-list">
+          <li>Classical &amp; Lagrangian Mechanics</li>
+          <li>Fluid Dynamics (intro)</li>
+          <li>Thermodynamics &amp; Propulsion</li>
+          <li>Orbital Mechanics (intro)</li>
+          <li>Structural Analysis</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <p class="skill-card-title">Engineering Tools</p>
+        <ul class="skill-list">
+          <li>SolidWorks (CAD)</li>
+          <li>Granta EduPack</li>
+          <li>ANSYS / FEA (intro)</li>
+          <li>Arduino &amp; Embedded Systems</li>
+          <li>Lab Instruments</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ FEATURED PROJECTS ══ -->
+  <section id="projects">
+    <div class="projects-header">
+      <p class="section-label" style="margin-bottom:0;">Featured Projects</p>
+      <a href="projects.html" class="proj-all-link">All projects</a>
+    </div>
+
+    <div class="proj-rows" style="margin-top:2rem;">
+
+      <!-- ── 01: PID SIMULATION ── -->
+      <a href="project-pid.html" class="proj-row">
+        <div class="proj-media" data-model="">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Software / Control Theory</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p1a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p1b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p1c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-content">
+          <div class="proj-row-meta">
+            <span class="proj-num-s">01</span>
+            <span class="proj-domain-s">Software / Control Systems</span>
+          </div>
+          <h3 class="proj-title-r">PID Controller Simulation Suite</h3>
+          <p class="proj-desc-r">Python simulation of a second-order dynamic system with full PID controller. Tunes P, I, and D gains with real-time Matplotlib output — built as a foundation toward spacecraft attitude control.</p>
+          <p class="proj-insight-r">Same PID loop architecture stabilises satellite orientation, rocket TVC, and re-entry guidance.</p>
+          <div class="proj-row-foot">
+            <div class="proj-tags-r">
+              <span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">Matplotlib</span><span class="tag">Control Theory</span>
+            </div>
+            <span class="proj-cta">View project</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── 02: WEATHER STATION ── -->
+      <a href="project-weather.html" class="proj-row">
+        <div class="proj-media" data-model="models/weather-station.stl">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Embedded / Hardware</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p2a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p2b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p2c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-content">
+          <div class="proj-row-meta">
+            <span class="proj-num-s">02</span>
+            <span class="proj-domain-s">Embedded / Hardware</span>
+          </div>
+          <h3 class="proj-title-r">Portable Weather Station Node</h3>
+          <p class="proj-desc-r">Autonomous sensor network measuring humidity, temperature, wind speed, and rainfall via Arduino. Custom SolidWorks housing protects electronics from environmental exposure.</p>
+          <p class="proj-insight-r">Keeping sensors accurate under environmental stress — the same engineering challenge as aerospace instrument bay design.</p>
+          <div class="proj-row-foot">
+            <div class="proj-tags-r">
+              <span class="tag">Arduino</span><span class="tag">C/C++</span><span class="tag">SolidWorks</span><span class="tag">Embedded</span>
+            </div>
+            <span class="proj-cta">View project</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── 03: WHEELCHAIR LAUNCHER ── -->
+      <a href="project-wheelchair.html" class="proj-row">
+        <div class="proj-media" data-model="models/wheelchair-launcher.stl">
+          <div class="media-tabs">
+            <button class="m-tab active" data-tab="images">Photos</button>
+            <button class="m-tab no-model" data-tab="model">3D Model</button>
+          </div>
+          <span class="proj-category">Mechanical / 1P13</span>
+          <div class="m-panel active" data-panel="images">
+            <div class="ss-track">
+              <div class="ss-slide active ph"><img src="img/p3a.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p3b.jpg" alt="" onerror="this.style.display='none'" /></div>
+              <div class="ss-slide ph"><img src="img/p3c.jpg" alt="" onerror="this.style.display='none'" /></div>
+            </div>
+            <div class="ss-footer">
+              <button class="ss-arrow ss-prev">←</button>
+              <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+              <button class="ss-arrow ss-next">→</button>
+            </div>
+          </div>
+          <div class="m-panel" data-panel="model">
+            <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+              <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-content">
+          <div class="proj-row-meta">
+            <span class="proj-num-s">03</span>
+            <span class="proj-domain-s">Mechanical / Team Design</span>
+          </div>
+          <h3 class="proj-title-r">Wheelchair-Mounted Assistive Launcher</h3>
+          <p class="proj-desc-r">CAD-led design of a 6 m+ range ball launcher for a client with arthritis. Full SolidWorks assembly, Granta EduPack material selection, and multidisciplinary team coordination in ENGINEER 1P13.</p>
+          <p class="proj-insight-r">Granta material selection under 50 N+ cyclic load — identical methodology to aerospace structural component design.</p>
+          <div class="proj-row-foot">
+            <div class="proj-tags-r">
+              <span class="tag">SolidWorks</span><span class="tag">Granta EduPack</span><span class="tag">1P13</span>
+            </div>
+            <span class="proj-cta">View project</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="proj-footer" style="margin-top:2rem; display:flex; justify-content:center;">
+      <a href="projects.html" class="btn btn-outline">View all projects ↗</a>
+    </div>
+  </section>
+
+
+  <!-- ══ CONTACT ══ -->
+  <section id="contact">
+    <p class="section-label">Contact</p>
+    <h2 class="contact-top">Hard problems are better tackled with good people in the room.</h2>
+    <p class="contact-sub">Looking for co-op and research positions where I can apply physics to real engineering challenges. If you're working on something serious, I'd like to contribute.</p>
+    <div class="contact-links">
+      <a class="contact-item" href="mailto:grewalo@mcmaster.ca"><!-- EDIT -->
+        <span class="contact-plat">Email</span>
+        <span class="contact-val">grewalo@mcmaster.ca ↗</span>
+      </a>
+      <a class="contact-item" href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener">
+        <span class="contact-plat">LinkedIn</span>
+        <span class="contact-val">linkedin.com/in/onkaar-grewal ↗</span>
+      </a>
+      <a class="contact-item" href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener">
+        <span class="contact-plat">GitHub</span>
+        <span class="contact-val">github.com/OnkaarGrewal ↗</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p>
+  </footer>
+
+
+  <!-- ══ HERO CAROUSEL ══ -->
+  <script>
+    const slides = document.querySelectorAll('.hero-slide');
+    const inds   = document.querySelectorAll('#hero-inds .h-ind');
+    const count  = document.getElementById('hero-count');
+    let cur = 0, timer;
+    function heroGo(n) {
+      slides[cur].classList.remove('active'); inds[cur].classList.remove('active');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('active'); inds[cur].classList.add('active');
+      count.textContent = (cur + 1) + ' / ' + slides.length;
+    }
+    inds.forEach((b, i) => b.addEventListener('click', () => { clearInterval(timer); heroGo(i); timer = setInterval(() => heroGo(cur + 1), 4500); }));
+    timer = setInterval(() => heroGo(cur + 1), 4500);
+  </script>
+
+  <!-- ══ MEDIA VIEWER (Slideshow + 3D) ══ -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader }     from 'three/addons/loaders/STLLoader.js';
+
+    // ── Shared material + helpers ──
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xB8C4CF, metalness: 0.55, roughness: 0.4 });
+    const wireMat  = new THREE.MeshBasicMaterial({ color: 0xFDBF57, wireframe: true });
+
+    function buildScene(canvas, modelPath) {
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.shadowMap.enabled = true;
+      renderer.setClearColor(0x18181E);
+
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.001, 2000);
+      camera.position.set(0, 1, 4);
+
+      // Lighting
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(3, 5, 3); scene.add(key);
+      const fill = new THREE.DirectionalLight(0xaabbff, 0.5); fill.position.set(-3, 2, -3); scene.add(fill);
+      const rim  = new THREE.DirectionalLight(0xFDBF57, 0.3); rim.position.set(0, -2, -4); scene.add(rim);
+      scene.add(new THREE.GridHelper(20, 30, 0x252528, 0x252528));
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.07; controls.autoRotate = true; controls.autoRotateSpeed = 1.2;
+
+      let mesh = null;
+      const initPos = camera.position.clone();
+      const initTarget = controls.target.clone();
+
+      // Load STL
+      const loader = new STLLoader();
+      const loadingEl = canvas.closest('.model-wrap').querySelector('.model-loading');
+      loader.load(modelPath, (geo) => {
+        geo.computeVertexNormals();
+        geo.computeBoundingBox();
+        const box = geo.boundingBox;
+        const c   = new THREE.Vector3(); box.getCenter(c);
+        const sz  = new THREE.Vector3(); box.getSize(sz);
+        geo.translate(-c.x, -c.y, -c.z);
+        mesh = new THREE.Mesh(geo, solidMat.clone());
+        mesh.castShadow = true;
+        scene.add(mesh);
+        const maxD = Math.max(sz.x, sz.y, sz.z);
+        camera.position.set(0, maxD * 0.4, maxD * 1.7);
+        controls.target.set(0, 0, 0);
+        controls.update();
+        initPos.copy(camera.position);
+        loadingEl.classList.add('hidden');
+      }, null, () => { loadingEl.innerHTML = '<p style="color:#7A7A74;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;">Model file not found.<br>Add models/ folder to your repo.</p>'; });
+
+      // Resize
+      function resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      new ResizeObserver(resize).observe(canvas);
+
+      // Render loop
+      let visible = true;
+      function animate() { requestAnimationFrame(animate); if (visible) { controls.update(); renderer.render(scene, camera); } }
+      animate();
+
+      return {
+        reset() { camera.position.copy(initPos); controls.target.copy(initTarget); controls.update(); },
+        toggleWire() { if (mesh) mesh.material = mesh.material.wireframe ? solidMat.clone() : wireMat; },
+        setVisible(v) { visible = v; if (v) resize(); }
+      };
+    }
+
+    // ── Per-card setup ──
+    document.querySelectorAll('.feat-card, .proj-card, .proj-row').forEach(card => {
+      const mediaEl = card.querySelector('.proj-media');
+      if (!mediaEl) return;
+
+      // Prevent card link navigation when interacting with media controls
+      mediaEl.addEventListener('click', e => e.preventDefault());
+      // But still allow the card itself to navigate via keyboard or direct click outside media
+      card.addEventListener('click', e => {
+        if (e.target.closest('.proj-media')) { e.preventDefault(); return; }
+      });
+
+      const modelPath = mediaEl.dataset.model || card.dataset.model;
+      const tabs      = mediaEl.querySelectorAll('.m-tab');
+      const panels    = mediaEl.querySelectorAll('.m-panel');
+
+      // Show 3D tab only if model exists
+      if (modelPath) {
+        mediaEl.querySelector('.m-tab[data-tab="model"]').classList.remove('no-model');
+      }
+
+      let viewer = null;
+      let viewerBuilt = false;
+
+      // Tab switching
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.tab;
+          mediaEl.querySelector(`[data-panel="${target}"]`).classList.add('active');
+
+          if (target === 'model' && !viewerBuilt && modelPath) {
+            viewerBuilt = true;
+            const canvas = mediaEl.querySelector('.model-canvas');
+            viewer = buildScene(canvas, modelPath);
+          }
+          if (viewer) viewer.setVisible(target === 'model');
+        });
+      });
+
+      // 3D Controls
+      mediaEl.querySelectorAll('.m-ctrl').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!viewer) return;
+          if (btn.dataset.action === 'reset') viewer.reset();
+          if (btn.dataset.action === 'wire') { viewer.toggleWire(); btn.classList.toggle('on'); }
+        });
+      });
+
+      // Slideshow
+      const slides = Array.from(mediaEl.querySelectorAll('.ss-slide'));
+      const dots   = Array.from(mediaEl.querySelectorAll('.ss-dot'));
+      let cur = 0;
+      function goSlide(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+      }
+      mediaEl.querySelector('.ss-prev')?.addEventListener('click', () => goSlide(cur - 1));
+      mediaEl.querySelector('.ss-next')?.addEventListener('click', () => goSlide(cur + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => goSlide(i)));
+    });
+  </script>
+
+</body>
+</html>
