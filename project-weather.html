@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Station — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    .nav-pad { padding-top: var(--nav-h); }
+    .case-wrap { max-width: 1440px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    .case-header {
+      padding: 4rem 4vw 3rem; border-bottom: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: end;
+    }
+    .case-back { font-family: var(--sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem; transition: color 0.2s; }
+    .case-back::before { content: '←'; }
+    .case-back:hover { color: var(--gold); }
+    .case-domain { font-family: var(--sans); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--maroon-l); margin-bottom: 0.75rem; }
+    .case-title { font-family: var(--serif); font-weight: 700; font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1.5rem; }
+    .case-meta { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .meta-key { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .meta-val { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+    .case-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; align-self: end; }
+
+    /* ══ INTERACTIVE 3D VIEWER ══ */
+    .viewer-section {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      position: relative;
+    }
+
+    /* Layer toggle bar */
+    .layer-bar {
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,12,0.9);
+      position: relative; z-index: 10;
+    }
+    .layer-label {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); margin-right: 0.35rem;
+    }
+    .layer-btn {
+      font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.32rem 0.85rem; border: 1px solid var(--border2);
+      background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s;
+    }
+    .layer-btn:hover { border-color: var(--muted2); color: var(--muted2); }
+    .layer-btn.active { border-color: var(--gold); background: rgba(253,191,87,0.1); color: var(--gold); }
+    .layer-hint {
+      margin-left: auto;
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; color: var(--muted);
+    }
+
+    /* Main viewer area */
+    .viewer-main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      height: 62vh; min-height: 420px;
+    }
+
+    /* Canvas container */
+    .canvas-wrap {
+      position: relative; overflow: hidden;
+      background: var(--bg3);
+    }
+    #model-canvas {
+      width: 100%; height: 100%; display: block; cursor: grab;
+    }
+    #model-canvas:active { cursor: grabbing; }
+
+    /* Loading overlay */
+    .viewer-loading {
+      position: absolute; inset: 0; z-index: 20;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+      background: var(--bg3);
+    }
+    .viewer-loading.hidden { display: none; }
+    .load-ring {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid var(--border2); border-top-color: var(--gold);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .load-text { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; color: var(--muted); }
+    .load-bar-wrap { width: 160px; height: 2px; background: var(--border); }
+    .load-bar { height: 2px; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+    /* Hover tooltip */
+    .hover-tip {
+      position: absolute; z-index: 15; pointer-events: none;
+      background: rgba(10,10,12,0.9); backdrop-filter: blur(8px);
+      border: 1px solid var(--gold); padding: 0.35rem 0.75rem;
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+      color: var(--gold); white-space: nowrap; display: none;
+      transform: translate(12px, -50%);
+    }
+
+    /* Controls hint */
+    .canvas-controls-hint {
+      position: absolute; bottom: 0.75rem; left: 1rem; z-index: 10;
+      font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ── INFO PANEL (right side) ── */
+    .info-panel {
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      background: var(--bg2);
+      overflow-y: auto;
+    }
+
+    /* Default state */
+    .info-default {
+      padding: 2rem 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      flex: 1; justify-content: center;
+    }
+    .info-default-title {
+      font-family: var(--sans); font-weight: 700; font-size: 0.78rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    }
+    .part-list { display: flex; flex-direction: column; gap: 0; }
+    .part-list-item {
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em;
+      color: var(--muted); cursor: pointer; transition: color 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .part-list-item:first-child { border-top: 1px solid var(--border); }
+    .part-list-item:hover { color: var(--gold); }
+    .part-list-item::before { content: '◈'; font-size: 0.5rem; color: var(--maroon-l); }
+
+    /* Selected part detail */
+    .info-detail { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .info-back {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; gap: 0.4rem; background: none; border: none;
+      transition: color 0.2s;
+    }
+    .info-back::before { content: '←'; }
+    .info-back:hover { color: var(--gold); }
+    .info-part-category {
+      font-family: var(--mono); font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--maroon-l);
+    }
+    .info-part-name {
+      font-family: var(--serif); font-weight: 700; font-size: 1.25rem;
+      color: var(--text); line-height: 1.2;
+    }
+    .info-part-desc { font-size: 0.88rem; color: var(--muted2); line-height: 1.72; }
+    .info-part-specs { display: flex; flex-direction: column; border: 1px solid var(--border); margin-top: 0.5rem; }
+    .spec-row { display: grid; grid-template-columns: 1fr 1.2fr; border-bottom: 1px solid var(--border); padding: 0.6rem 0.85rem; gap: 0.5rem; }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-k { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .spec-v { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+
+    /* ── CASE BODY (below viewer) ── */
+    .case-body {
+      padding: 5rem 4vw; display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; border-bottom: 1px solid var(--border);
+    }
+    .case-section-title { font-family: var(--serif); font-weight: 700; font-size: 1.4rem; color: var(--text); margin-bottom: 1.25rem; }
+    .case-section-title::before { content: '// '; color: var(--maroon-l); font-family: var(--mono); font-size: 0.9rem; }
+    .case-text { font-size: 0.92rem; color: var(--muted2); line-height: 1.78; }
+    .case-text p + p { margin-top: 0.85rem; }
+    .case-text strong { color: var(--text); font-weight: 600; }
+    .outcome-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .outcome { display: flex; gap: 1rem; align-items: start; padding: 1.1rem; border: 1px solid var(--border); background: var(--bg2); }
+    .outcome-dot { color: var(--gold); flex-shrink: 0; }
+    .outcome-text { font-size: 0.88rem; color: var(--muted2); line-height: 1.65; }
+    .outcome-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 0.2rem; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .case-header { grid-template-columns: 1fr; }
+      .viewer-main { grid-template-columns: 1fr; height: auto; }
+      .info-panel { min-height: 200px; border-left: none; border-top: 1px solid var(--border); }
+      .case-body { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    @media (max-width: 600px) {
+      .case-header { padding: 3rem 5vw 2.5rem; }
+      .case-body { padding: 3.5rem 5vw; }
+      .layer-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo">Onkaar Grewal</a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="nav-pad"></div>
+
+  <div class="case-wrap">
+
+    <!-- HEADER -->
+    <header class="case-header">
+      <div>
+        <a href="projects.html" class="case-back">All Projects</a>
+        <p class="case-domain">Embedded Systems · Hardware · 2024 – Present</p>
+        <h1 class="case-title">Portable Weather<br>Station Node</h1>
+        <div class="case-meta">
+          <div class="meta-item"><span class="meta-key">MCU</span><span class="meta-val">Arduino (ATmega328P)</span></div>
+          <div class="meta-item"><span class="meta-key">Languages</span><span class="meta-val">C / C++</span></div>
+          <div class="meta-item"><span class="meta-key">CAD</span><span class="meta-val">SolidWorks</span></div>
+          <div class="meta-item"><span class="meta-key">Status</span><span class="meta-val" style="color:var(--gold);">In progress</span></div>
+        </div>
+      </div>
+      <div class="case-tags">
+        <span class="tag">Arduino</span><span class="tag">C/C++</span><span class="tag">SolidWorks</span>
+        <span class="tag">I²C / SPI</span><span class="tag">Embedded</span>
+      </div>
+    </header>
+
+    <!-- ══ INTERACTIVE 3D VIEWER ══ -->
+    <!--
+      Upload your GLB file as: models/weather-station.glb
+      (rename weather_station_assembly.glb → weather-station.glb)
+    -->
+    <div class="viewer-section">
+
+      <!-- Layer toggles -->
+      <div class="layer-bar">
+        <span class="layer-label">Show:</span>
+        <button class="layer-btn active" data-layer="all">All Parts</button>
+        <button class="layer-btn" data-layer="structure">Structure</button>
+        <button class="layer-btn" data-layer="anemometer">Anemometer</button>
+        <button class="layer-btn" data-layer="windvane">Wind Vane</button>
+        <button class="layer-btn" data-layer="sensors">Sensors</button>
+        <span class="layer-hint">Hover to highlight · Click to inspect</span>
+      </div>
+
+      <div class="viewer-main">
+
+        <!-- 3D Canvas -->
+        <div class="canvas-wrap">
+          <div class="viewer-loading" id="v-loading">
+            <div class="load-ring"></div>
+            <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
+            <span class="load-text">Loading model…</span>
+          </div>
+          <canvas id="model-canvas"></canvas>
+          <div class="hover-tip" id="hover-tip"></div>
+          <span class="canvas-controls-hint">Drag to rotate · Scroll to zoom</span>
+        </div>
+
+        <!-- Info panel -->
+        <div class="info-panel" id="info-panel">
+          <!-- Default: part list -->
+          <div class="info-default" id="info-default">
+            <p class="info-default-title">Click a part to inspect</p>
+            <div class="part-list" id="part-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <!-- Detail view (hidden until part selected) -->
+          <div class="info-detail" id="info-detail" style="display:none;">
+            <button class="info-back" id="info-back">All parts</button>
+            <span class="info-part-category" id="detail-category"></span>
+            <h3 class="info-part-name" id="detail-name"></h3>
+            <p class="info-part-desc" id="detail-desc"></p>
+            <div class="info-part-specs" id="detail-specs"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CASE BODY -->
+    <div class="case-body">
+      <div>
+        <h2 class="case-section-title">Overview</h2>
+        <div class="case-text">
+          <p>
+            Autonomous weather monitoring system measuring humidity, temperature, wind speed, and
+            rainfall with real-time data logging. Sensor communication protocols implemented in
+            C/C++ on an Arduino-based embedded system using I²C and SPI interfaces.
+          </p>
+          <p>
+            Mechanical housing designed in SolidWorks — engineered to protect electronics from
+            environmental exposure while maintaining accurate sensor calibration. The housing went
+            through several iterations to solve ventilation vs. waterproofing tradeoffs.
+          </p>
+        </div>
+      </div>
+      <div>
+        <h2 class="case-section-title">What I Learned</h2>
+        <div class="outcome-list">
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Sensor enclosure design</strong>Ventilation and thermal isolation determine whether your sensor reads the environment or the inside of your box.</div>
+          </div>
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Embedded C/C++ discipline</strong>Memory is tight on ATmega328P — interrupt-driven sensor polling and careful data type choices matter.</div>
+          </div>
+          <div class="outcome"><span class="outcome-dot">◆</span>
+            <div class="outcome-text"><strong>Iterative physical design</strong>CAD models and 3D prints revealed fit issues invisible on screen — the housing went through three major revisions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /case-wrap -->
+
+  <footer><p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p></footer>
+
+
+  <!-- ══ INTERACTIVE 3D VIEWER SCRIPT ══ -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+
+    // ── Part database ──
+    // Maps mesh names (from GLB) to display info and layer category
+    const PARTS = {
+      'Base-1': {
+        label: 'Mounting Base',
+        category: 'structure',
+        categoryLabel: 'Structure',
+        desc: 'Main base platform. Mounts the entire assembly to a post, tripod, or fixed surface. Designed to accept standard mounting hardware.',
+        specs: [{ k: 'Function', v: 'Structural base' }, { k: 'Material', v: 'PLA (prototype)' }]
+      },
+      'Electronics Bay Cone-1': {
+        label: 'Electronics Bay',
+        category: 'structure',
+        categoryLabel: 'Structure',
+        desc: 'Sealed conical enclosure housing the Arduino microcontroller, SD card logger, RTC module, and power supply. Designed to keep electronics dry while managing heat dissipation.',
+        specs: [{ k: 'Contents', v: 'Arduino + data logger' }, { k: 'Sealing', v: 'Friction-fit lid' }]
+      },
+      'Top - Roof - Lid-1': {
+        label: 'Sensor Roof / Lid',
+        category: 'structure',
+        categoryLabel: 'Structure',
+        desc: 'Protective roof shields internal sensors from direct rain and solar radiation while allowing airflow through the ventilation channels in the walls.',
+        specs: [{ k: 'Function', v: 'Rain/radiation shield' }, { k: 'Ventilation', v: 'Passive airflow' }]
+      },
+      'Cup - Arm-1': {
+        label: 'Anemometer Cup (1 of 3)',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'One of three cup arms. The concave inside face catches significantly more wind drag than the convex outside face — this asymmetry creates a net rotational torque proportional to wind speed.',
+        specs: [{ k: 'Principle', v: 'Drag differential' }, { k: 'Count', v: '3 cups total' }]
+      },
+      'Cup - Arm-2': {
+        label: 'Anemometer Cup (2 of 3)',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Second anemometer cup arm. All three cups are spaced 120° apart to ensure balanced rotation and accurate RPM measurement regardless of wind direction.',
+        specs: [{ k: 'Spacing', v: '120° from each cup' }]
+      },
+      'Cup - Arm-3': {
+        label: 'Anemometer Cup (3 of 3)',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Third anemometer cup arm. Rotation speed of all three cups combined is counted by the hall-effect sensor below to calculate wind speed in m/s.',
+        specs: [{ k: 'Output', v: 'RPM → wind speed (m/s)' }]
+      },
+      'Axle-1': {
+        label: 'Anemometer Axle',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Central vertical axle that the three anemometer cups rotate around. Runs down through the bearing cap to the hall-effect sensor at the base of the anemometer assembly.',
+        specs: [{ k: 'Bearing type', v: 'Ball bearing' }]
+      },
+      'Bearing Cap - Bottom-1': {
+        label: 'Bearing Cap',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Retains the lower bearing of the anemometer axle. Keeps the axle centered and minimises rotational friction so low wind speeds still register accurately.',
+        specs: [{ k: 'Function', v: 'Axle retention + low friction' }]
+      },
+      'Foundation Stand Hall-Effect Sensor-1': {
+        label: 'Hall-Effect Sensor Mount',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Holds the hall-effect sensor at a fixed position relative to the rotating anemometer axle. Each time a magnet on the axle passes the sensor, a pulse is counted — RPM is calculated from pulse frequency.',
+        specs: [{ k: 'Sensor type', v: 'Hall-effect (digital)' }, { k: 'Output', v: 'Pulse per revolution' }]
+      },
+      'Second Level - Anemometer - Wind Direction-1': {
+        label: 'Anemometer Level Mount',
+        category: 'anemometer',
+        categoryLabel: 'Anemometer',
+        desc: 'Structural ring that locates the anemometer assembly at the correct height above the sensor housing, and provides the attachment point for the wind vane direction sensor.',
+        specs: [{ k: 'Function', v: 'Height positioning' }]
+      },
+      'Axle - WV-1': {
+        label: 'Wind Vane Axle',
+        category: 'windvane',
+        categoryLabel: 'Wind Vane',
+        desc: 'Rotates freely on low-friction bearings. The wind vane flag attached above aligns with the wind direction, rotating this axle. A rotary potentiometer or encoder below reads the angle.',
+        specs: [{ k: 'Function', v: 'Wind direction transmission' }, { k: 'Output', v: 'Angle → compass bearing' }]
+      },
+      'Wind Vane Housing Lid-1': {
+        label: 'Wind Vane Housing Lid',
+        category: 'windvane',
+        categoryLabel: 'Wind Vane',
+        desc: 'Top cap of the wind vane housing. Seals the direction sensor from rain while allowing the axle to pass through and rotate freely.',
+        specs: [{ k: 'Feature', v: 'Sealed bearing pass-through' }]
+      },
+      'Wind Vane Top Lid-1': {
+        label: 'Wind Vane Top Lid',
+        category: 'windvane',
+        categoryLabel: 'Wind Vane',
+        desc: 'Upper outer lid of the wind vane assembly — final weather seal on the top of the unit.',
+        specs: [{ k: 'Function', v: 'Weather seal' }]
+      },
+      'Bme280 PCB-1 Bme280 PCB-1': {
+        label: 'BME280 Sensor PCB',
+        category: 'sensors',
+        categoryLabel: 'Sensors & Electronics',
+        desc: 'PCB carrying the BME280 environmental sensor IC. Measures temperature (±0.5°C), relative humidity (±3%), and barometric pressure (±1 hPa). Communicates over I²C to the Arduino.',
+        specs: [{ k: 'Sensor', v: 'Bosch BME280' }, { k: 'Interface', v: 'I²C (0x76/0x77)' }, { k: 'Measures', v: 'Temp, Humidity, Pressure' }]
+      },
+      'Sensor Housing-2': {
+        label: 'Sensor Housing',
+        category: 'sensors',
+        categoryLabel: 'Sensors & Electronics',
+        desc: 'Ventilated housing for the BME280 PCB. The ventilation channels allow ambient air to circulate over the sensor while preventing water ingress and blocking direct solar radiation — both of which would cause false temperature readings.',
+        specs: [{ k: 'Ventilation', v: 'Labyrinthine channels' }, { k: 'Problem solved', v: 'Rain + solar radiation error' }]
+      },
+    };
+
+    // Layer membership — mesh names that belong to each category
+    const LAYERS = {
+      all:        null, // null = show everything
+      structure:  ['Base-1','Electronics Bay Cone-1','Top - Roof - Lid-1',
+                   'Walls-1 Wall Shellings-1','Walls-1 Wall Shellings-2','Walls-1 Wall Shellings-3',
+                   'Walls-1 Wall Shellings-4','Walls-1 Wall Shellings-5','Walls-1 Wall Shellings-6',
+                   'Walls-1 Wall Shellings-7','Walls-1 Wall Shellings-8','Walls-1 Wall Shellings-9'],
+      anemometer: ['Cup - Arm-1','Cup - Arm-2','Cup - Arm-3','Axle-1',
+                   'Bearing Cap - Bottom-1','Foundation Stand Hall-Effect Sensor-1',
+                   'Second Level - Anemometer - Wind Direction-1'],
+      windvane:   ['Axle - WV-1','Wind Vane Housing Lid-1','Wind Vane Top Lid-1'],
+      sensors:    ['Bme280 PCB-1 Bme280 PCB-1','Bme280 PCB-1 C0603-1','Bme280 PCB-1 C0603-2',
+                   'Bme280 PCB-1 R0603-1','Bme280 PCB-1 R0603-2','Bme280 PCB-1 R0603-3',
+                   'Bme280 PCB-1 R0603-4','Bme280 PCB-1 U0428U0442U044bU0440U0435U0432U043eU0439 U0440U0430U0437U044aU0435U043c 6 U043aU043eU043dU0442 U0448U0430U0433 254U043cU043c-1',
+                   'Sensor Housing-2']
+    };
+
+    // ── Materials ──
+    const MAT_NORMAL   = () => new THREE.MeshStandardMaterial({ color: 0xC0C8D4, metalness: 0.45, roughness: 0.45 });
+    const MAT_HOVER    = () => new THREE.MeshStandardMaterial({ color: 0xC0C8D4, metalness: 0.45, roughness: 0.45, emissive: new THREE.Color(0xF97316), emissiveIntensity: 0.28 });
+    const MAT_SELECTED = () => new THREE.MeshStandardMaterial({ color: 0xC0C8D4, metalness: 0.45, roughness: 0.45, emissive: new THREE.Color(0xFDBF57), emissiveIntensity: 0.4 });
+    const MAT_DIM      = () => new THREE.MeshStandardMaterial({ color: 0x2A2A30, metalness: 0.2, roughness: 0.8, transparent: true, opacity: 0.08 });
+
+    // ── Three.js setup ──
+    const canvas   = document.getElementById('model-canvas');
+    const loading  = document.getElementById('v-loading');
+    const loadBar  = document.getElementById('load-bar');
+    const hoverTip = document.getElementById('hover-tip');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.setClearColor(0x18181E);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 2000);
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(3, 6, 4); key.castShadow = true; scene.add(key);
+    const fill = new THREE.DirectionalLight(0xaabbff, 0.5); fill.position.set(-4, 2, -3); scene.add(fill);
+    const rim  = new THREE.DirectionalLight(0xFDBF57, 0.25); rim.position.set(0, -3, -5); scene.add(rim);
+    const grid = new THREE.GridHelper(30, 40, 0x1C1C22, 0x1C1C22); scene.add(grid);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.06;
+    controls.autoRotate = true; controls.autoRotateSpeed = 0.7;
+
+    // ── State ──
+    const meshMap     = new Map(); // name → mesh
+    let hoveredMesh   = null;
+    let selectedMesh  = null;
+    let currentLayer  = 'all';
+    let modelLoaded   = false;
+
+    // ── Load GLB ──
+    const loader = new GLTFLoader();
+    loader.load(
+      'models/weather-station.glb',
+      (gltf) => {
+        gltf.scene.traverse(child => {
+          if (!child.isMesh) return;
+          child.material = MAT_NORMAL();
+          child.castShadow = true;
+          child.receiveShadow = true;
+          meshMap.set(child.name, child);
+        });
+        scene.add(gltf.scene);
+
+        // Fit camera to model
+        const box    = new THREE.Box3().setFromObject(gltf.scene);
+        const size   = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxD   = Math.max(size.x, size.y, size.z);
+        camera.position.set(center.x + maxD * 0.5, center.y + maxD * 0.7, center.z + maxD * 1.6);
+        controls.target.copy(center);
+        grid.position.y = box.min.y;
+        controls.update();
+        modelLoaded = true;
+
+        loading.classList.add('hidden');
+        buildPartList();
+      },
+      (progress) => {
+        if (progress.total) {
+          const pct = (progress.loaded / progress.total * 100).toFixed(0);
+          loadBar.style.width = pct + '%';
+        }
+      },
+      () => {
+        loading.innerHTML = '<p style="font-family:var(--mono);font-size:0.65rem;color:#7A7A74;text-align:center;padding:2rem;letter-spacing:0.1em;line-height:1.8;">Model not found.<br><br>Upload <code style="color:var(--gold-d)">weather_station_assembly.glb</code><br>to your repo as<br><code style="color:var(--gold-d)">models/weather-station.glb</code></p>';
+      }
+    );
+
+    // ── Resize ──
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    new ResizeObserver(resize).observe(canvas);
+
+    // ── Raycaster ──
+    const raycaster = new THREE.Raycaster();
+    const mouse     = new THREE.Vector2();
+
+    function getMeshesForRay() {
+      return [...meshMap.values()].filter(m => {
+        if (currentLayer === 'all') return true;
+        return (LAYERS[currentLayer] || []).includes(m.name);
+      });
+    }
+
+    function applyMaterial(mesh, type) {
+      switch (type) {
+        case 'hover':    mesh.material = MAT_HOVER();    break;
+        case 'selected': mesh.material = MAT_SELECTED(); break;
+        case 'dim':      mesh.material = MAT_DIM();      break;
+        default:         mesh.material = MAT_NORMAL();   break;
+      }
+    }
+
+    function refreshMaterials() {
+      const layerSet = currentLayer === 'all' ? null : new Set(LAYERS[currentLayer] || []);
+      meshMap.forEach((mesh, name) => {
+        if (mesh === selectedMesh)       applyMaterial(mesh, 'selected');
+        else if (mesh === hoveredMesh)   applyMaterial(mesh, 'hover');
+        else if (layerSet && !layerSet.has(name)) applyMaterial(mesh, 'dim');
+        else                             applyMaterial(mesh, 'normal');
+      });
+    }
+
+    // Hover
+    canvas.addEventListener('mousemove', (e) => {
+      if (!modelLoaded) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width)  *  2 - 1;
+      mouse.y = ((e.clientY - rect.top)  / rect.height) * -2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(getMeshesForRay(), false);
+      const hit  = hits.length ? hits[0].object : null;
+
+      if (hit !== hoveredMesh) {
+        hoveredMesh = hit;
+        refreshMaterials();
+        canvas.style.cursor = hit ? 'pointer' : 'grab';
+      }
+
+      if (hit) {
+        const info = PARTS[hit.name];
+        hoverTip.textContent = info ? info.label : hit.name;
+        hoverTip.style.display = 'block';
+        hoverTip.style.left = (e.clientX - canvas.getBoundingClientRect().left) + 'px';
+        hoverTip.style.top  = (e.clientY - canvas.getBoundingClientRect().top)  + 'px';
+      } else {
+        hoverTip.style.display = 'none';
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      hoveredMesh = null;
+      hoverTip.style.display = 'none';
+      refreshMaterials();
+    });
+
+    // Click
+    canvas.addEventListener('click', (e) => {
+      if (!modelLoaded) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width)  *  2 - 1;
+      mouse.y = ((e.clientY - rect.top)  / rect.height) * -2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(getMeshesForRay(), false);
+      const hit  = hits.length ? hits[0].object : null;
+
+      if (hit) {
+        selectedMesh = hit;
+        controls.autoRotate = false;
+        showDetail(hit.name);
+      } else {
+        selectedMesh = null;
+        showDefault();
+      }
+      refreshMaterials();
+    });
+
+    // ── Info panel ──
+    function showDetail(meshName) {
+      const info = PARTS[meshName] || {
+        label: meshName.replace(/-\d+$/, '').trim(),
+        categoryLabel: 'Component',
+        desc: 'Part of the weather station assembly.',
+        specs: []
+      };
+      document.getElementById('detail-category').textContent = info.categoryLabel || '';
+      document.getElementById('detail-name').textContent     = info.label;
+      document.getElementById('detail-desc').textContent     = info.desc;
+
+      const specsEl = document.getElementById('detail-specs');
+      specsEl.innerHTML = '';
+      if (info.specs && info.specs.length) {
+        info.specs.forEach(s => {
+          specsEl.innerHTML += `<div class="spec-row"><span class="spec-k">${s.k}</span><span class="spec-v">${s.v}</span></div>`;
+        });
+      } else {
+        specsEl.style.display = 'none';
+      }
+
+      document.getElementById('info-default').style.display = 'none';
+      document.getElementById('info-detail').style.display  = 'flex';
+    }
+
+    function showDefault() {
+      document.getElementById('info-detail').style.display  = 'none';
+      document.getElementById('info-default').style.display = 'flex';
+    }
+
+    document.getElementById('info-back').addEventListener('click', () => {
+      selectedMesh = null;
+      controls.autoRotate = true;
+      showDefault();
+      refreshMaterials();
+    });
+
+    // ── Build part list ──
+    function buildPartList() {
+      const list = document.getElementById('part-list');
+      const featured = [
+        'Base-1', 'Electronics Bay Cone-1', 'Top - Roof - Lid-1',
+        'Cup - Arm-1', 'Axle - WV-1',
+        'Foundation Stand Hall-Effect Sensor-1',
+        'Bme280 PCB-1 Bme280 PCB-1', 'Sensor Housing-2'
+      ];
+      featured.forEach(name => {
+        const info = PARTS[name];
+        if (!info || !meshMap.has(name)) return;
+        const el = document.createElement('div');
+        el.className = 'part-list-item';
+        el.textContent = info.label;
+        el.addEventListener('click', () => {
+          const mesh = meshMap.get(name);
+          selectedMesh = mesh;
+          hoveredMesh  = null;
+          controls.autoRotate = false;
+          showDetail(name);
+          refreshMaterials();
+        });
+        list.appendChild(el);
+      });
+    }
+
+    // ── Layer buttons ──
+    document.querySelectorAll('.layer-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLayer = btn.dataset.layer;
+        document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedMesh = null;
+        hoveredMesh  = null;
+        showDefault();
+        refreshMaterials();
+        // Auto-rotate while browsing layers
+        controls.autoRotate = true;
+      });
+    });
+
+    // ── Part list click from side panel also works on canvas ──
+    // (already handled above)
+
+    // ── Render loop ──
+    (function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+  </script>
+
+</body>
+</html>
