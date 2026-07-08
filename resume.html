@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Résumé — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+
+    /* ── RESUME PAGE ── */
+    .resume-wrap {
+      position: relative; z-index: 1;
+      max-width: 1440px; margin: 0 auto;
+      padding: 8rem 4vw 5rem;
+    }
+
+    /* Header row */
+    .resume-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 2rem; margin-bottom: 2.5rem;
+    }
+    .resume-title-block {}
+    .resume-eyebrow {
+      font-family: var(--sans); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--maroon-l); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .resume-eyebrow::after { content: ''; display: block; width: 36px; height: 1px; background: var(--maroon-l); }
+    .resume-title {
+      font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; color: var(--text);
+    }
+    .resume-sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.6rem; }
+    .resume-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+
+    /* ── PDF VIEWER — solid background so grid doesn't show through ── */
+    .resume-viewer-wrap {
+      position: relative; z-index: 2;
+      border: 1px solid var(--border);
+      /* Solid white background blocks the grid — PDFs render on white */
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .resume-viewer-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 82vh;
+      min-height: 640px;
+      border: none;
+      /* Force iframe to be opaque */
+      background: #ffffff;
+    }
+
+    /* Fallback shown when PDF doesn't load */
+    .resume-fallback {
+      padding: 5rem 2rem;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1.25rem; text-align: center;
+      background: var(--bg2);
+    }
+    .fallback-icon {
+      font-family: var(--mono); font-size: 2rem; color: var(--maroon-l); opacity: 0.5;
+    }
+    .fallback-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .fallback-msg { font-size: 0.88rem; color: var(--muted2); max-width: 360px; line-height: 1.65; }
+    .fallback-code {
+      font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.85rem;
+      border: 1px solid var(--border2); color: var(--gold-d); background: var(--bg3);
+    }
+
+    /* ── CONTACT STRIP ── */
+    .resume-contact {
+      display: flex; gap: 0;
+      margin-top: 2.5rem;
+      border: 1px solid var(--border);
+    }
+    .rc-item {
+      flex: 1; padding: 1.1rem 1.25rem; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.25rem;
+      transition: background 0.2s;
+    }
+    .rc-item:last-child { border-right: none; }
+    .rc-item:hover { background: var(--bg2); }
+    .rc-label { font-family: var(--mono); font-size: 0.58rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--maroon-l); }
+    .rc-val { font-size: 0.9rem; color: var(--text); transition: color 0.2s; }
+    .rc-item:hover .rc-val { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .resume-header { flex-direction: column; align-items: flex-start; }
+      .resume-viewer-wrap iframe { height: 65vh; min-height: 400px; }
+      .resume-contact { flex-wrap: wrap; }
+      .rc-item { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV — identical format to all other pages -->
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo"><svg viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="20" y1="10" x2="80" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FDBF57"/><stop offset="0.45" stop-color="#d9a441"/><stop offset="0.7" stop-color="#b8822c"/><stop offset="1" stop-color="#FDBF57"/></linearGradient></defs><circle cx="50" cy="68" r="26" fill="#7A003C"/><path d="M50 44 A24 24 0 1 0 72 78 L72 68 L54 68 L54 74 L64 74 A15 15 0 1 1 50 53 Z" fill="url(#lg)"/><path d="M50 8 C53.5 15 55 24 55 34 L55 50 L45 50 L45 34 C45 24 46.5 15 50 8 Z" fill="url(#lg)"/><circle cx="50" cy="20" r="2.4" fill="#7A003C"/><path d="M45 46 L38 55 L45 51 Z" fill="url(#lg)"/><path d="M55 46 L62 55 L55 51 Z" fill="url(#lg)"/><ellipse cx="50" cy="68" rx="38" ry="14" transform="rotate(-22 50 68)" stroke="url(#lg)" stroke-width="2.6" fill="none"/><path d="M72 20 l1.6 3.8 l3.8 1.6 l-3.8 1.6 l-1.6 3.8 l-1.6 -3.8 l-3.8 -1.6 l3.8 -1.6 Z" fill="#FDBF57"/><circle cx="83" cy="32" r="1.7" fill="#FDBF57"/><circle cx="78" cy="14" r="1.3" fill="#FDBF57"/></svg><span>Onkaar Grewal</span></a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta current">Résumé</a></li>
+      </ul>
+    </div>
+    <div class="nav-sections">
+      <a href="index.html#about">About</a>
+      <a href="index.html#education">Education</a>
+      <a href="index.html#skills">Skills</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="resume-wrap">
+
+    <!-- HEADER -->
+    <div class="resume-header">
+      <div class="resume-title-block">
+        <p class="resume-eyebrow">Onkaar Grewal</p>
+        <h1 class="resume-title">Résumé</h1>
+        <p class="resume-sub">Materials Engineering · McMaster University · Class of 2028</p>
+      </div>
+      <div class="resume-actions">
+        <a href="resume.pdf" download class="btn btn-primary">Download PDF ↓</a>
+        <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open full screen ↗</a>
+      </div>
+    </div>
+
+    <!--
+      PDF VIEWER
+      ─────────────────────────────────────────────────────
+      Upload your CV as "resume.pdf" to the root of your repo.
+      The white background blocks the grid from showing through.
+      ─────────────────────────────────────────────────────
+    -->
+    <div class="resume-viewer-wrap">
+      <iframe
+        src="resume.pdf"
+        title="Onkaar Grewal — Résumé"
+        aria-label="Résumé PDF viewer"
+      >
+        <!-- Shown in browsers that can't render the iframe -->
+        <div class="resume-fallback">
+          <div class="fallback-icon">PDF</div>
+          <h2 class="fallback-title">Résumé not uploaded yet</h2>
+          <p class="fallback-msg">Upload your CV to the repo root named exactly:</p>
+          <span class="fallback-code">resume.pdf</span>
+          <a href="mailto:grewalo@mcmaster.ca" class="btn btn-outline" style="margin-top:0.5rem;">
+            Request by email ↗
+          </a>
+        </div>
+      </iframe>
+    </div>
+
+    <!-- CONTACT STRIP -->
+    <div class="resume-contact">
+      <a class="rc-item" href="mailto:grewalo@mcmaster.ca"> <!-- EDIT: your actual email -->
+        <span class="rc-label">Email</span>
+        <span class="rc-val">grewalo@mcmaster.ca</span>
+      </a>
+      <a class="rc-item" href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener">
+        <span class="rc-label">LinkedIn</span>
+        <span class="rc-val">onkaar-grewal-691917379</span>
+      </a>
+      <a class="rc-item" href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener">
+        <span class="rc-label">GitHub</span>
+        <span class="rc-val">OnkaarGrewal</span>
+      </a>
+      <div class="rc-item" style="cursor:default;">
+        <span class="rc-label">Available</span>
+        <span class="rc-val" style="color:#4ADE80;">Open to co-ops — 2025</span> <!-- EDIT -->
+      </div>
+    </div>
+
+  </div><!-- /resume-wrap -->
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p>
+  </footer>
+
+</body>
+</html>
