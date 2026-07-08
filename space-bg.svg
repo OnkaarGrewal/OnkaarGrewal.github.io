@@ -1,0 +1,80 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Planet body: dark sphere with a lit crescent on the upper-left edge -->
+    <radialGradient id="planetBody" cx="0.32" cy="0.30" r="0.95">
+      <stop offset="0" stop-color="#2a2230"/>
+      <stop offset="0.35" stop-color="#1a1420"/>
+      <stop offset="0.7" stop-color="#0f0b14"/>
+      <stop offset="1" stop-color="#080609"/>
+    </radialGradient>
+    <!-- Lit rim (terminator glow) -->
+    <radialGradient id="rimLight" cx="0.3" cy="0.28" r="0.75">
+      <stop offset="0.55" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="0.82" stop-color="#7a4a2a" stop-opacity="0.55"/>
+      <stop offset="0.9" stop-color="#c98a4a" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Atmospheric glow outside planet -->
+    <radialGradient id="atmo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.72" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="0.85" stop-color="#5a2a3a" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Warm nebula, upper right -->
+    <radialGradient id="nebula1" cx="0.8" cy="0.28" r="0.45">
+      <stop offset="0" stop-color="#6a3820" stop-opacity="0.30"/>
+      <stop offset="0.5" stop-color="#3a1f28" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#0A0A0C" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Cool maroon nebula, left -->
+    <radialGradient id="nebula2" cx="0.15" cy="0.6" r="0.4">
+      <stop offset="0" stop-color="#4a1030" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#0A0A0C" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Deep space base -->
+  <rect width="1920" height="1080" fill="#08080B"/>
+
+  <!-- Nebulae -->
+  <rect width="1920" height="1080" fill="url(#nebula1)"/>
+  <rect width="1920" height="1080" fill="url(#nebula2)"/>
+
+  <!-- Dense starfield -->
+  <g fill="#ECEAE4">
+    <circle cx="120" cy="90" r="1.2" opacity="0.8"/><circle cx="260" cy="180" r="0.8" opacity="0.5"/>
+    <circle cx="420" cy="70" r="1.0" opacity="0.65"/><circle cx="80" cy="300" r="0.9" opacity="0.55"/>
+    <circle cx="340" cy="360" r="0.7" opacity="0.45"/><circle cx="180" cy="480" r="1.1" opacity="0.7"/>
+    <circle cx="520" cy="280" r="0.8" opacity="0.5"/><circle cx="640" cy="150" r="0.9" opacity="0.6"/>
+    <circle cx="720" cy="380" r="0.7" opacity="0.4"/><circle cx="480" cy="520" r="1.0" opacity="0.6"/>
+    <circle cx="300" cy="620" r="0.8" opacity="0.5"/><circle cx="90" cy="640" r="0.9" opacity="0.55"/>
+    <circle cx="880" cy="120" r="1.0" opacity="0.65"/><circle cx="1020" cy="240" r="0.8" opacity="0.5"/>
+    <circle cx="1160" cy="90" r="0.9" opacity="0.6"/><circle cx="1280" cy="200" r="0.7" opacity="0.45"/>
+    <circle cx="1420" cy="120" r="1.1" opacity="0.7"/><circle cx="1560" cy="260" r="0.8" opacity="0.5"/>
+    <circle cx="1680" cy="100" r="1.0" opacity="0.6"/><circle cx="1780" cy="220" r="0.7" opacity="0.45"/>
+    <circle cx="1500" cy="400" r="0.9" opacity="0.55"/><circle cx="1840" cy="340" r="0.8" opacity="0.5"/>
+    <circle cx="1340" cy="440" r="0.7" opacity="0.4"/><circle cx="960" cy="340" r="0.8" opacity="0.5"/>
+    <circle cx="1080" cy="420" r="0.7" opacity="0.42"/><circle cx="60" cy="780" r="1.0" opacity="0.6"/>
+    <circle cx="220" cy="820" r="0.8" opacity="0.5"/><circle cx="400" cy="880" r="0.9" opacity="0.55"/>
+    <circle cx="140" cy="960" r="0.7" opacity="0.45"/><circle cx="560" cy="760" r="0.8" opacity="0.5"/>
+    <circle cx="740" cy="880" r="0.7" opacity="0.4"/><circle cx="900" cy="940" r="0.9" opacity="0.5"/>
+  </g>
+  <!-- Gold accent stars -->
+  <g fill="#FDBF57">
+    <circle cx="1620" cy="160" r="1.4" opacity="0.7"/><circle cx="380" cy="220" r="1.1" opacity="0.55"/>
+    <circle cx="1180" cy="330" r="1.0" opacity="0.5"/><circle cx="820" cy="240" r="0.9" opacity="0.5"/>
+    <circle cx="1720" cy="440" r="1.0" opacity="0.5"/>
+  </g>
+  <!-- A few twinkle stars with cross glints -->
+  <g stroke="#FFE9B0" stroke-width="0.8" opacity="0.6">
+    <path d="M1450 300 v10 M1445 305 h10"/>
+    <path d="M650 520 v8 M646 524 h8"/>
+  </g>
+
+  <!-- Atmospheric halo behind planet -->
+  <circle cx="1360" cy="1120" r="720" fill="url(#atmo)"/>
+  <!-- Planet body -->
+  <circle cx="1360" cy="1120" r="640" fill="url(#planetBody)"/>
+  <!-- Lit crescent rim -->
+  <circle cx="1360" cy="1120" r="640" fill="url(#rimLight)"/>
+</svg>
