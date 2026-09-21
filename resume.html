@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Résumé — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+
+    /* ── RESUME PAGE ── */
+    .resume-wrap {
+      position: relative; z-index: 1;
+      max-width: 1440px; margin: 0 auto;
+      padding: 8rem 4vw 5rem;
+    }
+
+    /* Header row */
+    .resume-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 2rem; margin-bottom: 2.5rem;
+    }
+    .resume-title-block {}
+    .resume-eyebrow {
+      font-family: var(--sans); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--maroon-l); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .resume-eyebrow::after { content: ''; display: block; width: 36px; height: 1px; background: var(--maroon-l); }
+    .resume-title {
+      font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; color: var(--text);
+    }
+    .resume-sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.6rem; }
+    .resume-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+
+    /* ── RESUME PAGE(S) — rendered as real paper pages, not an embed ── */
+    .resume-viewer-wrap {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 2.5rem;
+      padding: 1rem 0 0.5rem;
+    }
+    .resume-page {
+      position: relative;
+      width: 100%; max-width: 850px;
+      background: #ffffff;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.5), 0 2px 0 rgba(0,0,0,0.15);
+      overflow: hidden;
+      /* aspect-ratio is set inline per page once the PDF loads, defaults to US Letter */
+      aspect-ratio: 8.5 / 11;
+    }
+    .resume-page canvas { display: block; width: 100%; height: 100%; }
+    .resume-loading {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1rem; padding: 6rem 2rem; color: var(--muted);
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    }
+    .resume-loading .loader {
+      width: 26px; height: 26px; border: 2px solid var(--border2); border-top-color: var(--gold);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Fallback shown when PDF doesn't load */
+    .resume-fallback {
+      padding: 5rem 2rem;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1.25rem; text-align: center;
+      background: var(--bg2); border: 1px solid var(--border);
+      width: 100%; max-width: 850px;
+    }
+    .fallback-icon {
+      font-family: var(--mono); font-size: 2rem; color: var(--maroon-l); opacity: 0.5;
+    }
+    .fallback-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .fallback-msg { font-size: 0.88rem; color: var(--muted2); max-width: 360px; line-height: 1.65; }
+    .fallback-code {
+      font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.85rem;
+      border: 1px solid var(--border2); color: var(--gold-d); background: var(--bg3);
+    }
+
+    /* ── CONTACT STRIP ── */
+    .resume-contact {
+      display: flex; gap: 0;
+      margin-top: 2.5rem;
+      border: 1px solid var(--border);
+    }
+    .rc-item {
+      flex: 1; padding: 1.1rem 1.25rem; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.25rem;
+      transition: background 0.2s;
+    }
+    .rc-item:last-child { border-right: none; }
+    .rc-item:hover { background: var(--bg2); }
+    .rc-label { font-family: var(--mono); font-size: 0.58rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--maroon-l); }
+    .rc-val { font-size: 0.9rem; color: var(--text); transition: color 0.2s; }
+    .rc-item:hover .rc-val { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .resume-header { flex-direction: column; align-items: flex-start; }
+      .resume-viewer-wrap { gap: 1.5rem; }
+      .resume-contact { flex-wrap: wrap; }
+      .rc-item { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV — identical format to all other pages -->
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo"><img src="logo.png" alt="Onkaar Grewal logo"><span>Onkaar Grewal</span></a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta current">Résumé</a></li>
+      </ul>
+    </div>
+    <div class="nav-sections">
+      <a href="index.html#about">About</a>
+      <a href="index.html#education">Education</a>
+      <a href="index.html#skills">Skills</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="resume-wrap">
+
+    <!-- HEADER -->
+    <div class="resume-header">
+      <div class="resume-title-block">
+        <p class="resume-eyebrow">Onkaar Grewal</p>
+        <h1 class="resume-title">Résumé</h1>
+        <p class="resume-sub">Materials Engineering · McMaster University · Class of 2028</p>
+      </div>
+      <div class="resume-actions">
+        <a href="resume.pdf" download class="btn btn-primary">Download PDF ↓</a>
+        <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open full screen ↗</a>
+      </div>
+    </div>
+
+    <!--
+      RESUME PAGES
+      ─────────────────────────────────────────────────────
+      Upload your CV as "resume.pdf" to the root of your repo.
+      Each page renders as its own real letter-size page (via pdf.js) —
+      not a browser PDF plugin embed — so it sits in the page like paper.
+    -->
+    <div class="resume-viewer-wrap" id="resume-viewer">
+      <div class="resume-loading" id="resume-loading">
+        <div class="loader"></div>
+        <p>Loading résumé…</p>
+      </div>
+    </div>
+
+    <!-- Fallback shown if resume.pdf is missing or fails to render -->
+    <div class="resume-fallback" id="resume-fallback" style="display:none;">
+      <div class="fallback-icon">PDF</div>
+      <h2 class="fallback-title">Résumé not uploaded yet</h2>
+      <p class="fallback-msg">Upload your CV to the repo root named exactly:</p>
+      <span class="fallback-code">resume.pdf</span>
+      <a href="mailto:grewalo@mcmaster.ca" class="btn btn-outline" style="margin-top:0.5rem;">
+        Request by email ↗
+      </a>
+    </div>
+
+    <!-- CONTACT STRIP -->
+    <div class="resume-contact">
+      <a class="rc-item" href="mailto:grewalo@mcmaster.ca"> <!-- EDIT: your actual email -->
+        <span class="rc-label">Email</span>
+        <span class="rc-val">grewalo@mcmaster.ca</span>
+      </a>
+      <a class="rc-item" href="https://www.linkedin.com/in/onkaar-grewal-691917379/" target="_blank" rel="noopener">
+        <span class="rc-label">LinkedIn</span>
+        <span class="rc-val">onkaar-grewal-691917379</span>
+      </a>
+      <a class="rc-item" href="https://github.com/OnkaarGrewal" target="_blank" rel="noopener">
+        <span class="rc-label">GitHub</span>
+        <span class="rc-val">OnkaarGrewal</span>
+      </a>
+      <div class="rc-item" style="cursor:default;">
+        <span class="rc-label">Available</span>
+        <span class="rc-val" style="color:#4ADE80;">Open to co-ops — 2025</span> <!-- EDIT -->
+      </div>
+    </div>
+
+  </div><!-- /resume-wrap -->
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p>
+  </footer>
+
+  <!-- pdf.js — renders resume.pdf as real page canvases instead of a browser PDF embed -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    (function () {
+      const viewer   = document.getElementById('resume-viewer');
+      const loading  = document.getElementById('resume-loading');
+      const fallback = document.getElementById('resume-fallback');
+
+      function showFallback() {
+        viewer.style.display = 'none';
+        fallback.style.display = 'flex';
+      }
+
+      if (!window.pdfjsLib) { showFallback(); return; }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      pdfjsLib.getDocument('resume.pdf').promise.then(async (pdf) => {
+        loading.remove();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const baseViewport = page.getViewport({ scale: 1 });
+
+          const pageEl = document.createElement('div');
+          pageEl.className = 'resume-page';
+          pageEl.style.aspectRatio = (baseViewport.width / baseViewport.height).toString();
+
+          const canvas = document.createElement('canvas');
+          pageEl.appendChild(canvas);
+          viewer.appendChild(pageEl);
+
+          // Render at a fixed high-res target width for crisp text at any display size
+          const renderScale = (1400 * dpr) / baseViewport.width;
+          const viewport = page.getViewport({ scale: renderScale });
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport }).promise;
+        }
+      }).catch(showFallback);
+    })();
+  </script>
+
+</body>
+</html>

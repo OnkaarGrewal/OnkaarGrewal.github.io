@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Onkaar Grewal</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 8rem 4vw 3.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
+      border-bottom: 1px solid var(--border);
+      max-width: 1440px; margin: 0 auto;
+    }
+    .page-title {
+      font-family: var(--serif); font-weight: 700;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.05; letter-spacing: -0.02em; color: var(--text);
+    }
+    .page-title em { font-style: italic; color: var(--maroon-l); }
+    .page-intro { font-size: 0.96rem; color: var(--muted2); line-height: 1.75; }
+
+    /* ── FILTER BAR ── */
+    .filter-wrap {
+      position: sticky; top: var(--nav-h); z-index: 100;
+      background: rgba(10,10,12,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-bar {
+      max-width: 1440px; margin: 0 auto;
+      padding: 1.1rem 4vw; display: flex; gap: 0.4rem; flex-wrap: wrap;
+    }
+    .f-btn {
+      font-family: var(--sans); font-weight: 600; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.42rem 1rem;
+      background: transparent; border: 1px solid var(--border2); color: var(--muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .f-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .f-btn.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+
+    /* ── PROJECT ROWS ── */
+    .proj-list {
+      max-width: 1440px; margin: 0 auto;
+      display: flex; flex-direction: column;
+    }
+    /* Re-use .proj-row from style.css, override content for longer descriptions */
+    .proj-row .proj-content { justify-content: flex-start; padding-top: 3rem; padding-bottom: 3rem; gap: 1.1rem; }
+    .proj-row[data-hidden="true"] { display: none; }
+
+    .empty-msg {
+      display: none; padding: 5rem 4vw; text-align: center;
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted);
+      max-width: 1440px; margin: 0 auto;
+    }
+
+    /* ── EXPLORATORY / IN-PROGRESS WORK ── */
+    .extra-section {
+      max-width: 1440px; margin: 0 auto;
+      padding: 3.5rem 4vw 5rem;
+      border-top: 1px solid var(--border);
+    }
+    .extra-label {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.25rem;
+    }
+    .extra-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+      padding: 1.5rem 1.75rem; border: 1px solid var(--border); background: var(--bg2);
+      text-decoration: none; transition: border-color 0.2s, background 0.2s;
+    }
+    .extra-card:hover { border-color: var(--gold-d); background: var(--bg3); }
+    .extra-card-title {
+      font-family: var(--serif); font-weight: 700; font-size: 1.05rem; color: var(--text); margin-bottom: 0.35rem;
+    }
+    .extra-card-desc { font-size: 0.82rem; color: var(--muted2); line-height: 1.55; max-width: 640px; }
+    .extra-card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+    .extra-cta {
+      font-family: var(--sans); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--gold); white-space: nowrap;
+    }
+
+    @media (max-width: 900px) { .page-header { grid-template-columns: 1fr; gap: 2rem; padding-top: 7rem; } }
+    @media (max-width: 600px) { .page-header { padding: 6rem 5vw 3rem; } .filter-bar { padding: 0.9rem 5vw; } .extra-section { padding: 3rem 5vw 3.5rem; } .extra-card { padding: 1.25rem; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-top">
+      <a href="index.html" class="nav-logo"><img src="logo.png" alt="Onkaar Grewal logo"><span>Onkaar Grewal</span></a>
+      <ul class="nav-pages">
+        <li><a href="about.html">About Me</a></li>
+        <li><a href="projects.html" class="current">Projects</a></li>
+        <li><a href="resume.html" class="nav-cta">Résumé</a></li>
+      </ul>
+    </div>
+    <div class="nav-sections">
+      <a href="index.html#about">About</a>
+      <a href="index.html#education">Education</a>
+      <a href="index.html#skills">Skills</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-title">All<br><em>Projects.</em></h1>
+    <p class="page-intro">
+      A complete record of things I've designed, built, simulated, and iterated on —
+      spanning embedded hardware, mechanical CAD, and control systems software.
+      Each project ties directly back to an aerospace and materials engineering goal.
+    </p>
+  </header>
+
+  <div class="filter-wrap">
+    <div class="filter-bar">
+      <button class="f-btn active" data-filter="all">All</button>
+      <button class="f-btn" data-filter="software">Software</button>
+      <button class="f-btn" data-filter="hardware">Hardware</button>
+      <button class="f-btn" data-filter="mechanical">Mechanical</button>
+      <button class="f-btn" data-filter="team">Team</button>
+    </div>
+  </div>
+
+  <!--
+    PROJECT LIST — rows with detailed descriptions + clickable to project pages
+    TO ADD: Copy a .proj-row block, set data-category, update href, content, images, model.
+    If no 3D model: keep no-model class on the 3D tab button.
+    If has model: set data-model="models/filename.stl" on .proj-media, remove no-model class.
+  -->
+  <div class="proj-list" id="proj-list">
+
+    <!-- ── 01: WEATHER STATION ── -->
+    <a href="project-weather.html" class="proj-row" data-category="hardware software">
+      <div class="proj-media" data-model="https://raw.githubusercontent.com/OnkaarGrewal/OnkaarGrewal.github.io/main/models/weather-station.glb">
+        <div class="media-tabs">
+          <button class="m-tab active" data-tab="images">Photos</button>
+          <button class="m-tab no-model" data-tab="model">3D Model</button>
+        </div>
+        <span class="proj-category">Embedded / Hardware</span>
+        <div class="m-panel active" data-panel="images">
+          <div class="ss-track">
+            <div class="ss-slide active ph"><img src="img/p2a.jpg" alt="Hardware setup" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p2b.jpg" alt="SolidWorks housing" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p2c.jpg" alt="Data output" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="ss-footer">
+            <button class="ss-arrow ss-prev">←</button>
+            <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+            <button class="ss-arrow ss-next">→</button>
+          </div>
+        </div>
+        <div class="m-panel" data-panel="model">
+          <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+            <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="proj-content">
+        <div class="proj-row-meta">
+          <span class="proj-num-s">01</span>
+          <span class="proj-domain-s">Embedded / Hardware</span>
+        </div>
+        <h2 class="proj-title-r">Portable Weather Station Node</h2>
+        <p class="proj-desc-r">
+          Autonomous weather monitoring system with a sensor suite measuring humidity, temperature, wind speed, and rainfall with real-time data logging. Sensor communication protocols implemented in C/C++ on an Arduino-based embedded system using I²C and SPI interfaces. Mechanical housing designed and prototyped in SolidWorks — engineered to protect electronics from environmental exposure while maintaining accurate sensor calibration. The housing design accounts for moisture ingress, thermal expansion, and ventilation flow.
+        </p>
+        <p class="proj-insight-r">Designing enclosures that maintain sensor accuracy under environmental stress — identical engineering challenge to aerospace instrument bay design.</p>
+        <div class="proj-row-foot">
+          <div class="proj-tags-r">
+            <span class="tag">Arduino</span><span class="tag">C/C++</span><span class="tag">SolidWorks</span>
+            <span class="tag">Embedded</span><span class="tag">I²C / SPI</span><span class="tag">Data Logging</span>
+          </div>
+          <span class="proj-cta">Full project + 3D model</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- ── 03: POWER IN COMMUNITY (AEROPUP) ── -->
+    <a href="project-wheelchair.html" class="proj-row" data-category="mechanical hardware team">
+      <div class="proj-media" data-model="models/aeropup.stl">
+        <div class="media-tabs">
+          <button class="m-tab active" data-tab="images">Photos</button>
+          <button class="m-tab no-model" data-tab="model">3D Model</button>
+        </div>
+        <span class="proj-category">Mechanical / Assistive Design</span>
+        <div class="m-panel active" data-panel="images">
+          <div class="ss-track">
+            <div class="ss-slide active ph"><img src="img/p3a.gif" alt="Final cannon assembly" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p3b.jpg" alt="Prototype iteration" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p3c.jpg" alt="Team testing session" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="ss-footer">
+            <button class="ss-arrow ss-prev">←</button>
+            <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+            <button class="ss-arrow ss-next">→</button>
+          </div>
+        </div>
+        <div class="m-panel" data-panel="model">
+          <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+            <div class="model-footer"><span class="model-hint">Drag · Scroll · Right-drag to pan</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="proj-content">
+        <div class="proj-row-meta">
+          <span class="proj-num-s">02</span>
+          <span class="proj-domain-s">Mechanical / Materials Design</span>
+        </div>
+        <h2 class="proj-title-r">Power in Community (AeroPup)</h2>
+        <p class="proj-desc-r">
+          Designed and built a wheelchair-mounted ball launcher for a client with Juvenile Rheumatoid Arthritis and a leg amputation, so she could play fetch with her service dog without needing full mobility. Constraints were tight: launch a ball 5+ metres, stay reachable within 30–50 cm, weigh under 1 kg, and run quiet enough not to startle the dog. Went through four physical iterations — from a loud dual-motor cannon, through TPU-gripped tires and safety covers, to custom motor-dampening walls and a rigid reloading joint that finally brought noise and vibration down to public-use levels. Final build adds a servo-driven rack-and-pinion elevation system and a padded arm cushion that doubles as an armrest.
+        </p>
+        <p class="proj-insight-r">Isolating a system's own actuator vibration from the rest of the structure is a first-order concern in spacecraft instrument mounts — the same problem I solved here at hobbyist scale with dampening walls instead of a payload isolator.</p>
+        <div class="proj-row-foot">
+          <div class="proj-tags-r">
+            <span class="tag">Inventor</span><span class="tag">TPU 3D Printing</span>
+            <span class="tag">Arduino</span><span class="tag">Motors &amp; Servos</span><span class="tag">Material Research</span>
+          </div>
+          <span class="proj-cta">Full project + 3D model</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- ── 04: ROBOTIC END EFFECTOR (SIR LIFTS-A-LOT) ── -->
+    <a href="project-effector.html" class="proj-row" data-category="mechanical software team">
+      <div class="proj-media">
+        <div class="media-tabs">
+          <button class="m-tab active" data-tab="images">Photos</button>
+          <button class="m-tab no-model" data-tab="model">3D Model</button>
+        </div>
+        <span class="proj-category">Mechanical / Q-Arm Automation</span>
+        <div class="m-panel active" data-panel="images">
+          <div class="ss-track">
+            <div class="ss-slide active ph"><img src="img/p4a.gif" alt="Claw design" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p4b.jpg" alt="Final claw and grip" onerror="this.style.display='none'" /></div>
+            <div class="ss-slide ph"><img src="img/p4c.gif" alt="Team testing" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="ss-footer">
+            <button class="ss-arrow ss-prev">←</button>
+            <div class="ss-dots"><button class="ss-dot active"></button><button class="ss-dot"></button><button class="ss-dot"></button></div>
+            <button class="ss-arrow ss-next">→</button>
+          </div>
+        </div>
+        <div class="m-panel" data-panel="model">
+          <div class="model-wrap"><div class="model-loading"><div class="loader"></div><p>Loading…</p></div><canvas class="model-canvas"></canvas>
+            <div class="model-footer"><span class="model-hint">Drag · Scroll</span><div class="model-btns"><button class="m-ctrl" data-action="reset">Reset</button><button class="m-ctrl" data-action="wire">Wireframe</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="proj-content">
+        <div class="proj-row-meta">
+          <span class="proj-num-s">03</span>
+          <span class="proj-domain-s">Mechanical / Software</span>
+        </div>
+        <h2 class="proj-title-r">Robotic End Effector (Sir Lifts-A-Lot)</h2>
+        <p class="proj-desc-r">
+          Designed a robotic end effector for a Q-Arm to automate the packaging of irregular warehouse items — sponges, bottles, anything without a consistent shape — to cut manual handling injury risk and speed up processing. My claw design used sponge and rubber-foam surface-area contact rather than a rigid pinch grip, angled to work within the Q-Arm's restricted approach kinematics. I also wrote the Python lookup_products() function that matches a scanned barcode against a product database and returns the item for the arm's sorting logic. Went through two major redesigns — fixing a loose grooved-claw grip, then re-angling the whole assembly after discovering the Q-Arm can only approach a surface at a steep angle — and the final version handled 4 of 5 target objects successfully.
+        </p>
+        <p class="proj-insight-r">A design that only works in isolation from its actuator's real kinematics isn't done — the same lesson applies to spacecraft mechanisms that have to function within the reach and rotation limits of a robotic arm or deployment system, not just in an idealized CAD assembly.</p>
+        <div class="proj-row-foot">
+          <div class="proj-tags-r">
+            <span class="tag">Inventor</span><span class="tag">Python</span>
+            <span class="tag">Q-Arm</span><span class="tag">PrusaSlicer</span><span class="tag">Project Management</span>
+          </div>
+          <span class="proj-cta">Full project</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+  <p class="empty-msg" id="empty-msg">No projects in this category yet.</p>
+
+  <!-- ── EARLY-STAGE / EXPLORATORY WORK ── -->
+  <!-- Add more links here the same way if you want other in-progress projects off the main grid -->
+  <div class="extra-section">
+    <p class="extra-label">Also in progress</p>
+    <a href="project-pid.html" class="extra-card">
+      <div>
+        <div class="extra-card-title">PID Controller Simulation Suite</div>
+        <p class="extra-card-desc">
+          Python simulation of a second-order dynamic system with real-time PID tuning and
+          Matplotlib visualisation — the first model in a progressive suite building toward
+          drone and spacecraft attitude control.
+        </p>
+        <div class="extra-card-tags">
+          <span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">Control Theory</span>
+        </div>
+      </div>
+      <span class="extra-cta">View project →</span>
+    </a>
+  </div>
+
+  <footer>
+    <p>© 2025 Onkaar Grewal · Materials Engineering · McMaster University</p>
+  </footer>
+
+  <!-- FILTER -->
+  <script>
+    const rows  = document.querySelectorAll('.proj-row');
+    const btns  = document.querySelectorAll('.f-btn');
+    const empty = document.getElementById('empty-msg');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.filter;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        let n = 0;
+        rows.forEach(row => {
+          const cats = (row.dataset.category || '').split(' ');
+          const show = cat === 'all' || cats.includes(cat);
+          row.dataset.hidden = show ? 'false' : 'true';
+          if (show) n++;
+        });
+        empty.style.display = n === 0 ? 'block' : 'none';
+      });
+    });
+  </script>
+
+  <!-- MEDIA VIEWER -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader }     from 'three/addons/loaders/STLLoader.js';
+    import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xB8C4CF, metalness: 0.55, roughness: 0.4, side: THREE.DoubleSide });
+    const wireMat  = new THREE.MeshBasicMaterial({ color: 0xFDBF57, wireframe: true });
+
+    function buildScene(canvas, modelPath) {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.shadowMap.enabled = false;
+      renderer.setClearColor(0x18181E);
+
+      canvas.setAttribute('draggable', 'false');
+      canvas.style.touchAction = 'none';
+      canvas.style.userSelect = 'none';
+      canvas.addEventListener('dragstart', e => e.preventDefault());
+      canvas.addEventListener('mousedown', e => e.preventDefault());
+
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
+      camera.position.set(0, 1, 4);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+      const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(3, 5, 3); scene.add(key);
+      const fill = new THREE.DirectionalLight(0xaabbff, 0.5); fill.position.set(-3, 2, -3); scene.add(fill);
+      const rim  = new THREE.DirectionalLight(0xFDBF57, 0.3); rim.position.set(0, -2, -4); scene.add(rim);
+      const grid = new THREE.GridHelper(40, 30, 0x252528, 0x252528); scene.add(grid);
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.07;
+      controls.autoRotate = true; controls.autoRotateSpeed = 1.2;
+
+      let modelRoot = null;
+      const initPos = camera.position.clone();
+      const initTarget = controls.target.clone();
+      const loadEl  = canvas.closest('.model-wrap').querySelector('.model-loading');
+
+      function frameModel(box) {
+        const c  = new THREE.Vector3(); box.getCenter(c);
+        const sz = new THREE.Vector3(); box.getSize(sz);
+        const maxD = Math.max(sz.x, sz.y, sz.z);
+        camera.position.set(c.x, c.y + maxD * 0.4, c.z + maxD * 1.7);
+        controls.target.copy(c);
+        controls.minDistance = maxD * 0.6;
+        controls.maxDistance = maxD * 3.5;
+        camera.near = maxD * 0.01; camera.far = maxD * 50;
+        camera.updateProjectionMatrix();
+        grid.position.y = box.min.y;
+        controls.update();
+        initPos.copy(camera.position); initTarget.copy(controls.target);
+        loadEl.classList.add('hidden');
+      }
+      const onError = () => { loadEl.innerHTML = '<p style="color:#7A7A74;font-family:var(--mono);font-size:0.6rem;text-align:center;padding:1rem;letter-spacing:0.1em;line-height:1.8;">Model not found.</p>'; };
+
+      if (modelPath.toLowerCase().endsWith('.glb') || modelPath.toLowerCase().endsWith('.gltf')) {
+        new GLTFLoader().load(modelPath, (gltf) => {
+          modelRoot = gltf.scene;
+          modelRoot.rotation.x = -Math.PI / 2;
+          modelRoot.traverse(ch => { if (ch.isMesh) ch.material = solidMat.clone(); });
+          const pc = new THREE.Box3().setFromObject(modelRoot).getCenter(new THREE.Vector3());
+          modelRoot.position.sub(pc);
+          scene.add(modelRoot);
+          frameModel(new THREE.Box3().setFromObject(modelRoot));
+        }, null, onError);
+      } else {
+        new STLLoader().load(modelPath, (geo) => {
+          geo.computeVertexNormals(); geo.computeBoundingBox();
+          const c = new THREE.Vector3(); geo.boundingBox.getCenter(c);
+          geo.translate(-c.x, -c.y, -c.z);
+          modelRoot = new THREE.Mesh(geo, solidMat.clone());
+          scene.add(modelRoot);
+          frameModel(new THREE.Box3().setFromObject(modelRoot));
+        }, null, onError);
+      }
+
+      function resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      }
+      resize(); new ResizeObserver(resize).observe(canvas);
+      let visible = true;
+      (function loop() { requestAnimationFrame(loop); if (visible) { controls.update(); renderer.render(scene, camera); } })();
+      return {
+        reset()       { camera.position.copy(initPos); controls.target.copy(initTarget); controls.update(); },
+        toggleWire()  { if (!modelRoot) return; modelRoot.traverse(ch => { if (ch.isMesh) ch.material = ch.material.wireframe ? solidMat.clone() : wireMat; }); },
+        setVisible(v) { visible = v; if (v) resize(); }
+      };
+    }
+
+    document.querySelectorAll('.proj-row').forEach(row => {
+      const mediaEl = row.querySelector('.proj-media');
+      if (!mediaEl) return;
+      const modelPath = mediaEl.dataset.model;
+      const tabs  = mediaEl.querySelectorAll('.m-tab');
+      const panels = mediaEl.querySelectorAll('.m-panel');
+
+      // Show 3D tab if model path is set
+      if (modelPath) mediaEl.querySelector('.m-tab[data-tab="model"]').classList.remove('no-model');
+
+      // Prevent row link navigation when clicking inside media
+      mediaEl.addEventListener('click', e => e.preventDefault());
+
+      let viewer = null, built = false;
+      tabs.forEach(tab => {
+        tab.addEventListener('click', e => {
+          e.preventDefault();
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.tab;
+          mediaEl.querySelector(`[data-panel="${target}"]`).classList.add('active');
+          if (target === 'model' && !built && modelPath) {
+            built = true;
+            viewer = buildScene(mediaEl.querySelector('.model-canvas'), modelPath);
+          }
+          if (viewer) viewer.setVisible(target === 'model');
+        });
+      });
+
+      mediaEl.querySelectorAll('.m-ctrl').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          if (!viewer) return;
+          if (btn.dataset.action === 'reset') viewer.reset();
+          if (btn.dataset.action === 'wire')  { viewer.toggleWire(); btn.classList.toggle('on'); }
+        });
+      });
+
+      const slides = Array.from(mediaEl.querySelectorAll('.ss-slide'));
+      const dots   = Array.from(mediaEl.querySelectorAll('.ss-dot'));
+      let cur = 0;
+      function goSlide(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+      }
+      mediaEl.querySelector('.ss-prev')?.addEventListener('click', e => { e.preventDefault(); goSlide(cur - 1); });
+      mediaEl.querySelector('.ss-next')?.addEventListener('click', e => { e.preventDefault(); goSlide(cur + 1); });
+      dots.forEach((d, i) => d.addEventListener('click', e => { e.preventDefault(); goSlide(i); }));
+    });
+  </script>
+
+</body>
+</html>
